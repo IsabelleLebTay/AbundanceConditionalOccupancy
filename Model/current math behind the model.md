@@ -1,10 +1,10 @@
 **Data:**
 
-- Total number of sites: \( I \)
-- Number of visits per site: \( J \)
-- Bird count for each site \( i \) and visit \( j \): \( N_{i,j} \)
+- Total number of sites: $I$
+- Number of visits per site: $J$
+- Bird count for each site $i$ and visit $j: $N_{i,j}$
 - Various covariates including:
-  - Latitude of site \( i \): \( \text{latitude}_i \)
+  - Latitude of site $i$: $\text{latitude}_i$
   - Longitude of site \( i \): \( \text{longitude}_i \)
   - ... and others.
 
