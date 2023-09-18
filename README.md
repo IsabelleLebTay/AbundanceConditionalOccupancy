@@ -14,303 +14,40 @@ Detection of individuals, at the abundance level of the model, is related to two
 
 This model is applied to a multi-visit framework where there are 414 sites and 15 visits per site.
 
-First step: Occupancy and detection probability:
+**First step: Occupancy and detection probability:**
 
-�
-�
-z 
-i
-​
- 
-​
-  is the true estimated occupancy state.
+\( z_i \) is the true estimated occupancy state.
 
-�
-�
-∼
-Bernoulli
-(
-�
-�
-)
-z 
-i
-​
- ∼Bernoulli(ψ 
-i
-​
- )
-logit
-(
-�
-�
-)
-=
-�
-0
-+
-�
-1
-×
-latitude
-�
-+
-�
-2
-×
-longitude
-�
-+
-forest types
-�
-logit(ψ 
-i
-​
- )=β 
-0
-​
- +β 
-1
-​
- ×latitude 
-i
-​
- +β 
-2
-​
- ×longitude 
-i
-​
- +forest types 
-i
-​
- 
-where 
-�
-∈
-{
-0
-,
-1
-}
-z∈{0,1}, is either occupied or not and is estimated, and 
-logit
-(
-�
-)
-logit(ψ) is the prior.
+\[
+z_i \sim \text{Bernoulli}(\psi_i)
+\]
+\[
+\text{logit}(\psi_i) = \beta_0 + \beta_1 \times \text{latitude}_i + \beta_2 \times \text{longitude}_i + \text{forest types}_i
+\]
+
+where \( z \in \{0, 1\} \), is either occupied or not and is estimated, and \(\text{logit}(\psi)\) is the prior.
 
 From the observed samples, this true occupancy state is related by:
 
-�
-�
-�
-∼
-Bernoulli
-(
-�
-�
-×
-�
-�
-�
-)
-y 
-ij
-​
- ∼Bernoulli(z 
-i
-​
- ×p 
-ij
-​
- )
-where 
-�
-�
-�
-y 
-ij
-​
- 
-​
-  is the observed presence/absence for site 
-�
-i at visit 
-�
-j, and 
-�
-�
-�
-p 
-ij
-​
- 
-​
-  is the detection probability at site 
-�
-i, visit 
-�
-j. 
-�
-�
-�
-y 
-ij
-​
- 
-​
-  is resolved from the observed local abundance, where 
-�
-�
-�
-=
-1
-y 
-ij
-​
- 
-​
- =1 if 
-�
-�
-�
->
-0
-N 
-ij
-​
- 
-​
- >0.
+\[
+y_{ij} \sim \text{Bernoulli}(z_i \times p_{ij})
+\]
 
-logit
-(
-�
-�
-�
-)
-=
-�
-0
-+
-�
-1
-×
-time of day
-+
-�
-2
-×
-Julian date
-logit(p 
-ij
-​
- )=β 
-0
-​
- +β 
-1
-​
- ×time of day+β 
-2
-​
- ×Julian date
-The bird count observations 
-�
-�
-�
-N 
-ij
-​
- 
-​
- , is at the visit-level. For now, it will be summarized as a mean count at the site-level, as 
-�
-�
-M 
-i
-​
- 
-​
- 
-The local observed abundance, an observed quantity 
-�
-�
-N 
-i
-​
- 
-​
- , is conditional on occupancy and is used to estimate the unobserved Poisson rate 
-�
-�
-λ 
-i
-​
- 
-​
- :
+where \( y_{ij} \) is the **observed** presence/absence for site \( i \) at visit \( j \), and \( p_{ij} \) is the detection probability at site \( i \), visit \( j \). \( y_{ij} = 1 \) if \( N_{ij} > 0 \).
 
-[
-�
-�
-∣
-�
-�
-]
-∼
-Poisson
-(
-�
-�
-×
-�
-�
-)
-[M 
-i
-​
- ∣ψ 
-i
-​
- ]∼Poisson(λ 
-i
-​
- ×z 
-i
-​
- )
-log
-⁡
-(
-�
-�
-)
-=
-�
-0
-+
-�
-size
-×
-size
-+
-�
-age
-×
-age
-log(λ 
-i
-​
- )=α 
-0
-​
- +β 
-size
-​
- ×size+β 
-age
-​
- ×age
+\[
+\text{logit}(p_{ij}) = \beta_0 + \beta_1 \times \text{time of day} + \beta_2 \times \text{Julian date}
+\]
+
+The bird count observations \( N_{ij} \), is at the visit-level. For now, it will be summarized as a mean count at the site-level, as \( M_i \)
+The local observed abundance, an observed quantity \( N_i \), is conditional on occupancy and is used to estimate the unobserved Poisson rate \( \lambda_i \):
+
+\[
+[M_i | \psi_i] \sim \text{Poisson}(\lambda_i \times z_i)
+\]
+
+\[
+\log(\lambda_i) = \alpha_0 + \beta_{\text{size}} \times \text{size} + \beta_{\text{age}} \times \text{age}
+\]
+
 where the parameter of the Poisson distribution is dependent on the true occupancy state (when the species is present).
