@@ -89,7 +89,7 @@ model {
   // Priors
 
   // Detection (p) 
-  beta0_p ~ normal(0, 10);
+  beta0_p ~ normal(0, 1);
   beta1_p ~ normal(0, 10);
   beta2_p ~ normal(0, 10);
   beta3_p ~ normal(0, 10);
