@@ -72,7 +72,7 @@ transformed parameters {
 model {
   // logit_psi: estimated parameter of the latent unobserved ocucpancy
   for (i in 1:I) {
-    logit_psi[i] ~ normal(beta0_psi + beta1_psi * latitude[i] + beta2_psi * longitude[i] + 
+    logit_psi[i] ~ beta(beta0_psi + beta1_psi * latitude[i] + beta2_psi * longitude[i] + 
 														beta_conifer_psi * percent_conifer[i] + beta_deciduous_psi * percent_deciduous[i] + 
 														beta_pine_psi * percent_pine[i], sigma_psi);
 		for (j in 1:J) {
