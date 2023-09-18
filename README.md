@@ -22,11 +22,12 @@ $$
 z_i \sim \text{Bernoulli}(\psi_i)
 $$
 
+
+where $z \in \{0, 1\}$, is either occupied or not and is estimated, and $\text{logit}(\psi)$ is the prior. $\text{logit}(\psi)$  is deterministically calculated as:
+
 $$
 \text{logit}(\psi_i) = \beta_0 + \beta_1 \times \text{latitude}_i + \beta_2 \times \text{longitude}_i + \text{forest types}_i
 $$
-
-where $z \in \{0, 1\}$, is either occupied or not and is estimated, and $\text{logit}(\psi)$ is the prior.
 
 From the observed samples, this true occupancy state is related by:
 
