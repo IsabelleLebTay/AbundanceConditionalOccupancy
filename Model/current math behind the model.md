@@ -24,7 +24,7 @@ Various coefficients for occupancy, detection probability, and abundance.
 The estimated log odds of the latent unobserved occupancy for site $i$ is modeled as:
 
 $$
-\text{logit}(\_psi)_i \sim \beta_{0\_psi} + \beta_{1\_psi} \times \text{latitude}_i + \beta_{2\_psi} \times \text{longitude}_i + \text{sigma_psi}
+\text{logit}(\_psii) \sim \beta_{0\psi} + \beta_{1\psi} \times \text{latitude}_i + \beta_{2\psi} \times \text{longitude}_i + \text{sigma_psi}
 $$
 
 2. **Detection Model:**
