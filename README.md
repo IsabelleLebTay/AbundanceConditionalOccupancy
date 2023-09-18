@@ -1,6 +1,10 @@
 # AbundanceConditionalOccupancy
 
-This integrated abundance-occupancy model addresses the different ecological processes that affect the measures of occupancy and abundance.
+This model is for a single species, and will be replicated for 6 different bird species. They are all migratory boreal songbirds and I expect they will react differnetly to the environmental conditions reflected in the model both due to the species distribution, the regional density, their habitat preferences, and their vocal/territorial behaviours.
+
+The data was gathered using ARUs (Autonomous Recording Units) and processed during the first few hours around dawn. All deteceted individuals of each species of interest is tagged.
+
+This single-species integrated abundance-occupancy model addresses the different ecological processes that affect the measures of occupancy and abundance.
 
 The two observations we have are presence/absence and count for each site per recording, or visit.
 
@@ -19,20 +23,21 @@ This model is applied to a multi-visit framework where there are 414 sites and 1
 $z_i$ is the true estimated occupancy state.
 
 $$
-z_i \sim \text{Bernoulli}(\psi_i, \sigma_OccupancyProcess)
+z_i \sim \text{Bernoulli}(\psi_i)
 $$
 
-
-where $z \in \{0, 1\}$, is either occupied or not and is estimated, and $\text{logit}(\psi)$ is the prior. $(\psi)$  is deterministically calculated as:
+and the estimated parameter $\psi$ is a linear expression:
 
 $$
 \text{logit}(\psi_i) = \beta_0 + \beta_1 \times \text{latitude}_i + \beta_2 \times \text{longitude}_i + \text{forest types}_i
 $$
 
+where $z \in \{0, 1\}$, is either occupied or not and is estimated, and $\text{logit}(\psi)$ is the prior, and $\text{forest type}$ is the sum of the the coefficients and observations of the differnet forest types.
+
 From the observed samples, this true occupancy state is related by:
 
 $$
-y_{ij} \sim \text{Bernoulli}(z_i \times p_{ij}, \sigma_ObservationProcess)
+y_{ij} \sim \text{Bernoulli}(z_i \times p_{ij})
 $$
 
 where $y_{ij}$ is the **observed** presence/absence for site $i$ at visit $j$, and $p_{ij}$ is the detection probability at site $i$, visit $j$. $y_{ij} = 1$ if $N_{ij} > 0$.
@@ -46,6 +51,7 @@ The bird count observations $N_{ij}$, is at the visit-level. For now, it will be
 $$
 [M_i | \psi_i] \sim \text{Poisson}(\lambda_i \times z_i)
 $$
+
 $$
 \log(\lambda_i) = \alpha_0 + \beta_{\text{size}} \times \text{size} + \beta_{\text{age}} \times \text{age}
 $$
