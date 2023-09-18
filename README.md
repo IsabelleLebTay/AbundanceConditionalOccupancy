@@ -44,6 +44,7 @@ The bird count observations $N_{ij}$, is at the visit-level. For now, it will be
 $$
 [M_i | \psi_i] \sim \text{Poisson}(\lambda_i \times z_i)
 $$
+
 $$
 \log(\lambda_i) = \alpha_0 + \beta_{\text{size}} \times \text{size} + \beta_{\text{age}} \times \text{age}
 $$
