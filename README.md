@@ -15,36 +15,302 @@ Detection of individuals, at the abundance level of the model, is related to two
 This model is applied to a multi-visit framework where there are 414 sites and 15 visits per site.
 
 First step: Occupancy and detection probability:
-{\textit{z}\textsubscript{i}} is the true estimated occupancy state
 
-\begin{equation}
-    z_i \sim Bernoulli(\psi_i)
-\end{equation}
-\begin{equation}
-    logit(\psi_i) = \beta_0 + \beta_1 * latitude_i + \beta_2 * longitude_i + forest \: types_i
-\end{equation}
+�
+�
+z 
+i
+​
+ 
+​
+  is the true estimated occupancy state.
 
-where z $\epsilon$ \{0, 1\}, is either occupied or not and is estimated, and \textit{logit($\psi$)} is the prior.
+�
+�
+∼
+Bernoulli
+(
+�
+�
+)
+z 
+i
+​
+ ∼Bernoulli(ψ 
+i
+​
+ )
+logit
+(
+�
+�
+)
+=
+�
+0
++
+�
+1
+×
+latitude
+�
++
+�
+2
+×
+longitude
+�
++
+forest types
+�
+logit(ψ 
+i
+​
+ )=β 
+0
+​
+ +β 
+1
+​
+ ×latitude 
+i
+​
+ +β 
+2
+​
+ ×longitude 
+i
+​
+ +forest types 
+i
+​
+ 
+where 
+�
+∈
+{
+0
+,
+1
+}
+z∈{0,1}, is either occupied or not and is estimated, and 
+logit
+(
+�
+)
+logit(ψ) is the prior.
 
 From the observed samples, this true occupancy state is related by:
-\begin{equation}
-    y_{ij} \sim Bernoulli(z_i * p_{ij})
-\end{equation}
 
-where {\textit{y}\textsubscript{ij}} is the \textbf{observed} presence\textbackslash absence for site i at visit j, and {\textit{p}\textsubscript{ij}} is the detection probability at site i, visit j. {\textit{y}\textsubscript{ij}} is resolved from the observed local abundance, where {\textit{y}\textsubscript{ij}} = 1 if {\textit{N}\textsubscript{ij}} > 0.
+�
+�
+�
+∼
+Bernoulli
+(
+�
+�
+×
+�
+�
+�
+)
+y 
+ij
+​
+ ∼Bernoulli(z 
+i
+​
+ ×p 
+ij
+​
+ )
+where 
+�
+�
+�
+y 
+ij
+​
+ 
+​
+  is the observed presence/absence for site 
+�
+i at visit 
+�
+j, and 
+�
+�
+�
+p 
+ij
+​
+ 
+​
+  is the detection probability at site 
+�
+i, visit 
+�
+j. 
+�
+�
+�
+y 
+ij
+​
+ 
+​
+  is resolved from the observed local abundance, where 
+�
+�
+�
+=
+1
+y 
+ij
+​
+ 
+​
+ =1 if 
+�
+�
+�
+>
+0
+N 
+ij
+​
+ 
+​
+ >0.
 
-\begin{equation}
-    logit(p_{ij}) =  \beta_0 + \beta_1 * time \; of \; day + \beta_2 * Julian \; date
-\end{equation}
+logit
+(
+�
+�
+�
+)
+=
+�
+0
++
+�
+1
+×
+time of day
++
+�
+2
+×
+Julian date
+logit(p 
+ij
+​
+ )=β 
+0
+​
+ +β 
+1
+​
+ ×time of day+β 
+2
+​
+ ×Julian date
+The bird count observations 
+�
+�
+�
+N 
+ij
+​
+ 
+​
+ , is at the visit-level. For now, it will be summarized as a mean count at the site-level, as 
+�
+�
+M 
+i
+​
+ 
+​
+ 
+The local observed abundance, an observed quantity 
+�
+�
+N 
+i
+​
+ 
+​
+ , is conditional on occupancy and is used to estimate the unobserved Poisson rate 
+�
+�
+λ 
+i
+​
+ 
+​
+ :
 
-The bird count observations \textit{N\textsubscript{ij}}, is at the visit-level. For now, it will be summarised as a mean count at the site-level, as \textit{M\textsubscript{i}}
-The local observed abundance, an observed quantity \textit{N\textsubscript{i}}, is conditional on occupancy and is used to estimate the unobserved Poisson rate \textit{lambda\textsubscript{i}}
-\begin{equation}
-    [M_i | \psi_i]  \sim Poisson(\lambda_i * z_i)
-\end{equation}
-
-\begin{equation}
-    log(\lambda_i) = \alpha_0 + \beta_{size} * size + \beta_{age} * age 
-\end{equation}
-
-where the parameter of the Poisson distribution is dependant on the true occupancy state (when the species is present). 
+[
+�
+�
+∣
+�
+�
+]
+∼
+Poisson
+(
+�
+�
+×
+�
+�
+)
+[M 
+i
+​
+ ∣ψ 
+i
+​
+ ]∼Poisson(λ 
+i
+​
+ ×z 
+i
+​
+ )
+log
+⁡
+(
+�
+�
+)
+=
+�
+0
++
+�
+size
+×
+size
++
+�
+age
+×
+age
+log(λ 
+i
+​
+ )=α 
+0
+​
+ +β 
+size
+​
+ ×size+β 
+age
+​
+ ×age
+where the parameter of the Poisson distribution is dependent on the true occupancy state (when the species is present).
