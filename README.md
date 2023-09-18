@@ -16,38 +16,36 @@ This model is applied to a multi-visit framework where there are 414 sites and 1
 
 **First step: Occupancy and detection probability:**
 
-\( z_i \) is the true estimated occupancy state.
+$z_i$ is the true estimated occupancy state.
 
-\[
+$$
 z_i \sim \text{Bernoulli}(\psi_i)
-\]
-\[
+$$
+$$
 \text{logit}(\psi_i) = \beta_0 + \beta_1 \times \text{latitude}_i + \beta_2 \times \text{longitude}_i + \text{forest types}_i
-\]
+$$
 
-where \( z \in \{0, 1\} \), is either occupied or not and is estimated, and \(\text{logit}(\psi)\) is the prior.
+where $z \in \{0, 1\}$, is either occupied or not and is estimated, and $\text{logit}(\psi)$ is the prior.
 
 From the observed samples, this true occupancy state is related by:
 
-\[
+$$
 y_{ij} \sim \text{Bernoulli}(z_i \times p_{ij})
-\]
+$$
 
-where \( y_{ij} \) is the **observed** presence/absence for site \( i \) at visit \( j \), and \( p_{ij} \) is the detection probability at site \( i \), visit \( j \). \( y_{ij} = 1 \) if \( N_{ij} > 0 \).
+where $y_{ij}$ is the **observed** presence/absence for site $i$ at visit $j$, and $p_{ij}$ is the detection probability at site $i$, visit $j$. $y_{ij} = 1$ if $N_{ij} > 0$.
 
-\[
+$$
 \text{logit}(p_{ij}) = \beta_0 + \beta_1 \times \text{time of day} + \beta_2 \times \text{Julian date}
-\]
+$$
 
-The bird count observations \( N_{ij} \), is at the visit-level. For now, it will be summarized as a mean count at the site-level, as \( M_i \)
-The local observed abundance, an observed quantity \( N_i \), is conditional on occupancy and is used to estimate the unobserved Poisson rate \( \lambda_i \):
+The bird count observations $N_{ij}$, is at the visit-level. For now, it will be summarized as a mean count at the site-level, as $M_i$. The local observed abundance, an observed quantity $N_i$, is conditional on occupancy and is used to estimate the unobserved Poisson rate $\lambda_i$:
 
-\[
+$$
 [M_i | \psi_i] \sim \text{Poisson}(\lambda_i \times z_i)
-\]
-
-\[
+$$
+$$
 \log(\lambda_i) = \alpha_0 + \beta_{\text{size}} \times \text{size} + \beta_{\text{age}} \times \text{age}
-\]
+$$
 
 where the parameter of the Poisson distribution is dependent on the true occupancy state (when the species is present).
