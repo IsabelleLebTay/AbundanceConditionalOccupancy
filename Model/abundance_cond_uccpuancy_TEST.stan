@@ -80,6 +80,7 @@ model {
             logit_p[i, j] ~ normal(beta0_p + beta1_p * time_of_day[i, j] + beta2_p * Julian_date[i, j], sigma_p);
         }
 			
+      // this should be a deterministic equation
       log_lambda[i] ~ normal(beta0_lambda + beta_size * size[i] + beta_age * age[i] + 
 														 beta_conifer_lambda * percent_conifer[i] + beta_deciduous_lambda * percent_deciduous[i] + 
 														 beta_pine_lambda * percent_pine[i], sigma_lambda);

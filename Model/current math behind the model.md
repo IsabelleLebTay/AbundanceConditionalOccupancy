@@ -46,5 +46,5 @@ $$
 And the log lambda for site \( i \) is:
 
 $$
-\text{log}(\lambda_i) = \beta_{0\_\lambda} + \beta_{\text{size}} \times \text{size}_i + \beta_{\text{age}} \times \text{age}_i + \text{other covariates}
+\log(\lambda_i) = \beta_{0\_lambda} + \beta_{\text{size}} \times \text{size}_i + \beta_{\text{age}} \times \text{age}_i + \text{other covariates}
 $$
