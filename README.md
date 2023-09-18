@@ -21,6 +21,7 @@ $z_i$ is the true estimated occupancy state.
 $$
 z_i \sim \text{Bernoulli}(\psi_i)
 $$
+
 $$
 \text{logit}(\psi_i) = \beta_0 + \beta_1 \times \text{latitude}_i + \beta_2 \times \text{longitude}_i + \text{forest types}_i
 $$
