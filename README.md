@@ -1,6 +1,10 @@
 # AbundanceConditionalOccupancy
 
-This integrated abundance-occupancy model addresses the different ecological processes that affect the measures of occupancy and abundance.
+This model is for a single species, and will be replicated for 6 different bird species. They are all migratory boreal songbirds and I expect they will react differnetly to the environmental conditions reflected in the model both due to the species distribution, the regional density, their habitat preferences, and their vocal/territorial behaviours.
+
+The data was gathered using ARUs (Autonomous Recording Units) and processed during the first few hours around dawn. All deteceted individuals of each species of interest is tagged.
+
+This single-species integrated abundance-occupancy model addresses the different ecological processes that affect the measures of occupancy and abundance.
 
 The two observations we have are presence/absence and count for each site per recording, or visit.
 
