@@ -19,7 +19,7 @@ This model is applied to a multi-visit framework where there are 414 sites and 1
 $z_i$ is the true estimated occupancy state.
 
 $$
-z_i \sim \text{Bernoulli}(\psi_i)
+z_i \sim \text{Bernoulli}(\psi_i, \sigma_OccupancyProcess)
 $$
 
 
@@ -32,7 +32,7 @@ $$
 From the observed samples, this true occupancy state is related by:
 
 $$
-y_{ij} \sim \text{Bernoulli}(z_i \times p_{ij})
+y_{ij} \sim \text{Bernoulli}(z_i \times p_{ij}, \sigma_ObservationProcess)
 $$
 
 where $y_{ij}$ is the **observed** presence/absence for site $i$ at visit $j$, and $p_{ij}$ is the detection probability at site $i$, visit $j$. $y_{ij} = 1$ if $N_{ij} > 0$.
