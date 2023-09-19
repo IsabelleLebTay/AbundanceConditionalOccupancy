@@ -43,7 +43,6 @@ parameters {
   real beta_conifer_psi;
   real beta_deciduous_psi;
   real beta_pine_psi;
-  real sigma_occupancy_process;
 
   // Detection
   real beta0_p;    // intercept for detection probability
@@ -63,7 +62,7 @@ parameters {
 
 model {
   //maths
-  // z ~ bernoulli_logit(psi, sigma_occupancy_process); //  estimated latent occupancy
+  // z ~ bernoulli_logit(psi); //  estimated latent occupancy/ bernoulli_logit expects only one real argument
   // y ~ Bernoulli(z , p_detection); // vectorized, the likelihood of the observed data of presence/absence
 
   // not vectorized
@@ -78,14 +77,16 @@ model {
 
   // vectorized likelihoods
   // occupancy
+  y[J] ~ bernoulli_logit(z[I] * p_detection[J]);
+
   z ~ bernoulli_logit(beta0_psi + beta1_psi * latitude + beta2_psi * longitude + 
                         beta_conifer_psi * percent_conifer + beta_deciduous_psi * percent_deciduous + 
-                        beta_pine_psi * percent_pine, sigma_occupancy);
-  for j in (1:J) {
-    p_detection[j] ~ beta0_p + beta1_p * time_of_day[j] + beta2_p * Julian_date[j] + sigma_ObservationProcess; //
+                        beta_pine_psi * percent_pine);
+  for (j in 1:J) {
+    p_detection[j] ~ beta(beta0_p + beta1_p * time_of_day[j] + beta2_p * Julian_date[j], sigma_ObservationProcess); //
   }
 
-  y ~ Bernoulli(z, p_detection[i]);
+
 
   // abundance, not vectorized
 //    for i in (1:I) {
@@ -116,8 +117,6 @@ model {
   beta_deciduous_psi ~ normal(0, 10);
   beta_pine_psi ~ normal(0, 10);
 
-  sigma_occupancy ~ cauchy(0,1);
-
   // Abundance (lambda)
   beta0_lambda  ~ normal(0, 10);
   beta_size ~ normal(0, 10);
@@ -140,9 +139,9 @@ generated quantities{
   // occupancy
   z_pred ~ bernoulli_logit(beta0_psi + beta1_psi * latitude + beta2_psi * longitude + 
                         beta_conifer_psi * percent_conifer + beta_deciduous_psi * percent_deciduous + 
-                        beta_pine_psi * percent_pine, sigma_occupancy);
-  for j in (1:J) {
-    p_detection_pred[j] ~ beta0_p + beta1_p * time_of_day[j] + beta2_p * Julian_date[j] + sigma_ObservationProcess; //
+                        beta_pine_psi * percent_pine);
+  for (j in 1:J) {
+    p_detection_pred[j] ~ beta(beta0_p + beta1_p * time_of_day[j] + beta2_p * Julian_date[j], sigma_ObservationProcess); //
   }
 
   y_rep ~ Bernoulli(z_pred, p_detection_pred[i]);
