@@ -36,7 +36,7 @@ transformed data {
 parameters {
   // Occupancy
   vector[I] p_detection[J]; // the probability of detection is vecotrized over the number of sites for length of number of visits
-  real z[I]; // float z, estimated occupancy, of size I 
+  int z[I]; // int z, estimated occupancy, of size I (0 or 1)
   real beta0_psi;  // intercept for occupancy
   real beta1_psi;  // coefficient for latitude
   real beta2_psi;  // coefficient for longitude
@@ -77,6 +77,7 @@ model {
 
   // vectorized likelihoods
   // occupancy
+  // sampling of y, which is an array of ints of size J, vecotrized for each site (size I)
   y[J] ~ bernoulli_logit(z[I] * p_detection[J]);
 
   z ~ bernoulli_logit(beta0_psi + beta1_psi * latitude + beta2_psi * longitude + 

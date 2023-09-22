@@ -46,6 +46,7 @@ $$
 \text{logit}(p_{ij}) = \beta_0 + \beta_1 \times \text{time of day} + \beta_2 \times \text{Julian date}
 $$
 
+**Second step: Occupancy and detection probability:**
 The bird count observations $N_{ij}$, is at the visit-level. For now, it will be summarized as a mean count at the site-level, as $M_i$. The local observed abundance, an observed quantity $N_i$, is conditional on occupancy and is used to estimate the unobserved Poisson rate $\lambda_i$:
 
 $$
@@ -57,3 +58,8 @@ $$
 $$
 
 where the parameter of the Poisson distribution is dependent on the true occupancy state (when the species is present).
+
+
+**Implementation in Stan:**
+
+Stan does not support sampling discrete parameters (Stan user guide, Chap. 7). The latent occupancy state, z, is an estimated integer. Although Stan does not directly support this (which is possible in BUGS/JAGS), similar sampling is possible through marginalizing out the latent discrete parameters.
