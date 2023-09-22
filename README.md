@@ -63,3 +63,10 @@ where the parameter of the Poisson distribution is dependent on the true occupan
 **Implementation in Stan:**
 
 Stan does not support sampling discrete parameters (Stan user guide, Chap. 7). The latent occupancy state, z, is an estimated integer. Although Stan does not directly support this (which is possible in BUGS/JAGS), similar sampling is possible through marginalizing out the latent discrete parameters.
+
+*Marginalisation on the dicrete latent parameters*
+I am trying to estimate a discrete variable (occupancy), and Stan fundamentally doesn't sample a distribution from a non-continuous distribution. Their work around is to marginalise on the discrete parameter and sample from a continuous distribution that is derived from the discrete parameter. They implement this with the notation target +=, which denotes the target distribution and the . Marginalising over a discrete parameter indicates summing over the likelihood or the joint distribution for all its possible values. We are targetting the marginalisation of the Bernoulli-distributed latent discrete occupancy parameter $z$, given the data $y$, and the continuous parameter $(\phi)$. The joint distribution of the data an parameters can be written as:
+
+$$
+p(data|\phi, z) = p(data|\phi, z) * p(\phi) * p(z)
+$$

@@ -20,7 +20,7 @@ data {
 
 transformed data {
   int<lower=0> y[I, J];  // observed presence/absence, derived from the count N
-  real M[I];       // mean bird count for each site
+  real<lower=0> M[I];       // mean bird count for each site
 
   for (i in 1:I) {
 
@@ -35,8 +35,8 @@ transformed data {
 
 parameters {
   // Occupancy
-  vector[I] p_detection[J]; // the probability of detection is vecotrized over the number of sites for length of number of visits
-  int z[I]; // int z, estimated occupancy, of size I (0 or 1)
+  vector[I]<lower=0> p_detection[J]; // the probability of detection is vecotrized over the number of sites for length of number of visits
+  int<lower=0> z[I]; // int z, estimated occupancy, of size I (0 or 1)
   real beta0_psi;  // intercept for occupancy
   real beta1_psi;  // coefficient for latitude
   real beta2_psi;  // coefficient for longitude
