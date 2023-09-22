@@ -88,7 +88,7 @@ model {
       real lin_pred_detection = alpha_0 + alpha_1 * time_of_day[i,j] + alpha_2 * Julian_date[i,j];
       
       // Compute the detection probability at visit j for site i
-      real p_ij = exp(lin_pred_detection);
+      real p_ij = inv_logit(lin_pred_detection);
       
       // Log-likelihood when z_i = 0 (species not present at site i)
       real log_lik_0 = bernoulli_lpmf(y[i,j] | 0);
