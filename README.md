@@ -40,13 +40,20 @@ $$
 y_{ij} \sim \text{Bernoulli}(z_i \times p_{ij})
 $$
 
-where $y_{ij}$ is the **observed** presence/absence for site $i$ at visit $j$, and $p_{ij}$ is the detection probability at site $i$, visit $j$. $y_{ij} = 1$ if $N_{ij} > 0$.
+or, can we write it this way:
+
+$$
+y | z \sim \text{Bernoulli}(p(z))
+$$
+
+where $y_{ij}$ is the **observed** presence/absence for site $i$ at visit $j$, and $p_{ij}$ is the detection probability at site $i$, visit $j$ given $z_i$. $y_{ij} = 1$ if $N_{ij} > 0$.
 
 $$
 \text{logit}(p_{ij}) = \beta_0 + \beta_1 \times \text{time of day} + \beta_2 \times \text{Julian date}
 $$
 
 **Second step: Occupancy and detection probability:**
+
 The bird count observations $N_{ij}$, is at the visit-level. For now, it will be summarized as a mean count at the site-level, as $M_i$. The local observed abundance, an observed quantity $N_i$, is conditional on occupancy and is used to estimate the unobserved Poisson rate $\lambda_i$:
 
 $$
@@ -65,8 +72,23 @@ where the parameter of the Poisson distribution is dependent on the true occupan
 Stan does not support sampling discrete parameters (Stan user guide, Chap. 7). The latent occupancy state, z, is an estimated integer. Although Stan does not directly support this (which is possible in BUGS/JAGS), similar sampling is possible through marginalizing out the latent discrete parameters.
 
 *Marginalisation on the dicrete latent parameters*
-I am trying to estimate a discrete variable (occupancy), and Stan fundamentally doesn't sample a distribution from a non-continuous distribution. Their work around is to marginalise on the discrete parameter and sample from a continuous distribution that is derived from the discrete parameter. They implement this with the notation target +=, which denotes the target distribution and the . Marginalising over a discrete parameter indicates summing over the likelihood or the joint distribution for all its possible values. We are targetting the marginalisation of the Bernoulli-distributed latent discrete occupancy parameter $z$, given the data $y$, and the continuous parameter $(\phi)$. The joint distribution of the data an parameters can be written as:
+I am trying to estimate a discrete variable (occupancy), and Stan fundamentally doesn't sample a distribution from a non-continuous distribution. Their work around is to marginalise on the discrete parameter and sample from a continuous distribution that is derived from the discrete parameter. Marginalising over a discrete parameter indicates summing over the likelihood or the joint distribution for all its possible values. We are targetting the marginalisation of the Bernoulli-distributed latent discrete occupancy parameter $z$, given the data $y$, and the continuous parameter $(\psi)$. The joint distribution of the data an parameters can be written as:
 
 $$
-p(data|\phi, z) = p(data|\phi, z) * p(\phi) * p(z)
+p(data|\psi, z) = p(data|\psi, z) * p(\psi) * p(z)
 $$
+
+where p(data|$\psi$, z) is the likelihood of the data given the parameters, p($\psi$) is the prior on $\psi$ (in our case the log-linked linear expression), and p(z) is the Bernoulli distribution of z.
+
+To marginalise out z, the sum of all possible values of z is:
+
+$$
+p(data, \psi) = \sum_{z \in \{0, 1\}} p(data| \psi, z) * p(\psi) * p(z)
+$$
+
+This will provide Stan a continuous distribution in terms of the data and the parameter $\psi$ from which to sample.
+
+In the model block, Stan implements the marginalisation on a discrete latent variable with the notation target +=. The target keyword represents the logarithm of the joint density (or posteriro density, depending on context) being modeled. The += operation increments the value of the target distribution. 
+
+
+The local abundance is not an int so we're fine?
