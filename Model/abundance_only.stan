@@ -32,21 +32,30 @@ model {
 data {
     int<lower=0> I;
     array[I] int<lower=0> M;
+    vector[I] age;
+    vector[I] size;
 }
 
 parameters {
     real<lower=0, upper=1> theta;
-    real<lower=0> lambda;
+    real alpha; // Intercept
+    real beta; // Coefficient for the size covariate
+    real beta_size;
 }
 model {
+    beta ~ normal(0,10);
+    beta_size ~ normal(0,5);
+
     for (i in 1:I) {
+        // Calculate lambda using the size covariate
+        real lambda_i = exp(alpha + beta * age[i] + beta_size * size[i]);
         if (M[i] == 0) {
             target += log_sum_exp(log(theta),
                 log1m(theta)
-                    + poisson_lpmf(M[i] | lambda));
+                    + poisson_lpmf(M[i] | lambda_i));
     } else {
         target += log1m(theta)
-            + poisson_lpmf(M[i] | lambda);
+            + poisson_lpmf(M[i] | lambda_i);
         }
     }
 }
