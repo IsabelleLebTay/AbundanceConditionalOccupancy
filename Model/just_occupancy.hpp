@@ -4,23 +4,17 @@ namespace just_occupancy_model_namespace {
 using stan::model::model_base_crtp;
 using namespace stan::math;
 stan::math::profile_map profiles__;
-static constexpr std::array<const char*, 59> locations_array__ =
+static constexpr std::array<const char*, 47> locations_array__ =
   {" (found before start of program)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 28, column 2 to column 14)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 29, column 2 to column 21)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 30, column 2 to column 22)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 31, column 2 to column 28)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 32, column 2 to column 30)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 33, column 2 to column 25)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 35, column 2 to column 15)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 36, column 2 to column 15)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 37, column 2 to column 15)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 42, column 2 to column 24)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 43, column 2 to column 31)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 44, column 2 to column 32)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 45, column 2 to column 38)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 46, column 2 to column 40)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 47, column 2 to column 35)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 50, column 2 to column 25)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 51, column 2 to column 25)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 52, column 2 to column 25)",
@@ -50,12 +44,6 @@ static constexpr std::array<const char*, 59> locations_array__ =
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 11, column 2 to column 21)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 12, column 9 to column 10)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 12, column 2 to column 22)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 13, column 9 to column 10)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 13, column 2 to column 28)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 14, column 9 to column 10)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 14, column 2 to column 30)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 15, column 9 to column 10)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 15, column 2 to column 25)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 19, column 26 to column 27)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 19, column 29 to column 30)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/just_occupancy.stan', line 19, column 2 to column 32)",
@@ -73,17 +61,11 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
   Eigen::Matrix<double,-1,-1> Julian_date_data__;
   Eigen::Matrix<double,-1,1> latitude_data__;
   Eigen::Matrix<double,-1,1> longitude_data__;
-  Eigen::Matrix<double,-1,1> percent_conifer_data__;
-  Eigen::Matrix<double,-1,1> percent_deciduous_data__;
-  Eigen::Matrix<double,-1,1> percent_pine_data__;
   std::vector<std::vector<int>> y;
   Eigen::Map<Eigen::Matrix<double,-1,-1>> time_of_day{nullptr, 0, 0};
   Eigen::Map<Eigen::Matrix<double,-1,-1>> Julian_date{nullptr, 0, 0};
   Eigen::Map<Eigen::Matrix<double,-1,1>> latitude{nullptr, 0};
   Eigen::Map<Eigen::Matrix<double,-1,1>> longitude{nullptr, 0};
-  Eigen::Map<Eigen::Matrix<double,-1,1>> percent_conifer{nullptr, 0};
-  Eigen::Map<Eigen::Matrix<double,-1,1>> percent_deciduous{nullptr, 0};
-  Eigen::Map<Eigen::Matrix<double,-1,1>> percent_pine{nullptr, 0};
  public:
   ~just_occupancy_model() {}
   just_occupancy_model(stan::io::var_context& context__, unsigned int
@@ -105,55 +87,55 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
     try {
       int pos__ = std::numeric_limits<int>::min();
       pos__ = 1;
-      current_statement__ = 30;
+      current_statement__ = 24;
       context__.validate_dims("data initialization", "I", "int",
         std::vector<size_t>{});
       I = std::numeric_limits<int>::min();
-      current_statement__ = 30;
+      current_statement__ = 24;
       I = context__.vals_i("I")[(1 - 1)];
-      current_statement__ = 30;
+      current_statement__ = 24;
       stan::math::check_greater_or_equal(function__, "I", I, 0);
-      current_statement__ = 31;
+      current_statement__ = 25;
       context__.validate_dims("data initialization", "J", "int",
         std::vector<size_t>{});
       J = std::numeric_limits<int>::min();
-      current_statement__ = 31;
+      current_statement__ = 25;
       J = context__.vals_i("J")[(1 - 1)];
-      current_statement__ = 31;
+      current_statement__ = 25;
       stan::math::check_greater_or_equal(function__, "J", J, 0);
-      current_statement__ = 32;
+      current_statement__ = 26;
       stan::math::validate_non_negative_index("N", "I", I);
-      current_statement__ = 33;
+      current_statement__ = 27;
       stan::math::validate_non_negative_index("N", "J", J);
-      current_statement__ = 34;
+      current_statement__ = 28;
       context__.validate_dims("data initialization", "N", "int",
         std::vector<size_t>{static_cast<size_t>(I), static_cast<size_t>(J)});
       N = std::vector<std::vector<int>>(I,
             std::vector<int>(J, std::numeric_limits<int>::min()));
       {
         std::vector<int> N_flat__;
-        current_statement__ = 34;
+        current_statement__ = 28;
         N_flat__ = context__.vals_i("N");
-        current_statement__ = 34;
+        current_statement__ = 28;
         pos__ = 1;
-        current_statement__ = 34;
+        current_statement__ = 28;
         for (int sym1__ = 1; sym1__ <= J; ++sym1__) {
-          current_statement__ = 34;
+          current_statement__ = 28;
           for (int sym2__ = 1; sym2__ <= I; ++sym2__) {
-            current_statement__ = 34;
+            current_statement__ = 28;
             stan::model::assign(N, N_flat__[(pos__ - 1)],
               "assigning variable N", stan::model::index_uni(sym2__),
               stan::model::index_uni(sym1__));
-            current_statement__ = 34;
+            current_statement__ = 28;
             pos__ = (pos__ + 1);
           }
         }
       }
-      current_statement__ = 35;
+      current_statement__ = 29;
       stan::math::validate_non_negative_index("time_of_day", "I", I);
-      current_statement__ = 36;
+      current_statement__ = 30;
       stan::math::validate_non_negative_index("time_of_day", "J", J);
-      current_statement__ = 37;
+      current_statement__ = 31;
       context__.validate_dims("data initialization", "time_of_day", "double",
         std::vector<size_t>{static_cast<size_t>(I), static_cast<size_t>(J)});
       time_of_day_data__ = Eigen::Matrix<double,-1,-1>::Constant(I, J,
@@ -163,28 +145,28 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
         J);
       {
         std::vector<local_scalar_t__> time_of_day_flat__;
-        current_statement__ = 37;
+        current_statement__ = 31;
         time_of_day_flat__ = context__.vals_r("time_of_day");
-        current_statement__ = 37;
+        current_statement__ = 31;
         pos__ = 1;
-        current_statement__ = 37;
+        current_statement__ = 31;
         for (int sym1__ = 1; sym1__ <= J; ++sym1__) {
-          current_statement__ = 37;
+          current_statement__ = 31;
           for (int sym2__ = 1; sym2__ <= I; ++sym2__) {
-            current_statement__ = 37;
+            current_statement__ = 31;
             stan::model::assign(time_of_day, time_of_day_flat__[(pos__ - 1)],
               "assigning variable time_of_day",
               stan::model::index_uni(sym2__), stan::model::index_uni(sym1__));
-            current_statement__ = 37;
+            current_statement__ = 31;
             pos__ = (pos__ + 1);
           }
         }
       }
-      current_statement__ = 38;
+      current_statement__ = 32;
       stan::math::validate_non_negative_index("Julian_date", "I", I);
-      current_statement__ = 39;
+      current_statement__ = 33;
       stan::math::validate_non_negative_index("Julian_date", "J", J);
-      current_statement__ = 40;
+      current_statement__ = 34;
       context__.validate_dims("data initialization", "Julian_date", "double",
         std::vector<size_t>{static_cast<size_t>(I), static_cast<size_t>(J)});
       Julian_date_data__ = Eigen::Matrix<double,-1,-1>::Constant(I, J,
@@ -194,26 +176,26 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
         J);
       {
         std::vector<local_scalar_t__> Julian_date_flat__;
-        current_statement__ = 40;
+        current_statement__ = 34;
         Julian_date_flat__ = context__.vals_r("Julian_date");
-        current_statement__ = 40;
+        current_statement__ = 34;
         pos__ = 1;
-        current_statement__ = 40;
+        current_statement__ = 34;
         for (int sym1__ = 1; sym1__ <= J; ++sym1__) {
-          current_statement__ = 40;
+          current_statement__ = 34;
           for (int sym2__ = 1; sym2__ <= I; ++sym2__) {
-            current_statement__ = 40;
+            current_statement__ = 34;
             stan::model::assign(Julian_date, Julian_date_flat__[(pos__ - 1)],
               "assigning variable Julian_date",
               stan::model::index_uni(sym2__), stan::model::index_uni(sym1__));
-            current_statement__ = 40;
+            current_statement__ = 34;
             pos__ = (pos__ + 1);
           }
         }
       }
-      current_statement__ = 41;
+      current_statement__ = 35;
       stan::math::validate_non_negative_index("latitude", "I", I);
-      current_statement__ = 42;
+      current_statement__ = 36;
       context__.validate_dims("data initialization", "latitude", "double",
         std::vector<size_t>{static_cast<size_t>(I)});
       latitude_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
@@ -222,22 +204,22 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
         Eigen::Map<Eigen::Matrix<double,-1,1>>(latitude_data__.data(), I);
       {
         std::vector<local_scalar_t__> latitude_flat__;
-        current_statement__ = 42;
+        current_statement__ = 36;
         latitude_flat__ = context__.vals_r("latitude");
-        current_statement__ = 42;
+        current_statement__ = 36;
         pos__ = 1;
-        current_statement__ = 42;
+        current_statement__ = 36;
         for (int sym1__ = 1; sym1__ <= I; ++sym1__) {
-          current_statement__ = 42;
+          current_statement__ = 36;
           stan::model::assign(latitude, latitude_flat__[(pos__ - 1)],
             "assigning variable latitude", stan::model::index_uni(sym1__));
-          current_statement__ = 42;
+          current_statement__ = 36;
           pos__ = (pos__ + 1);
         }
       }
-      current_statement__ = 43;
+      current_statement__ = 37;
       stan::math::validate_non_negative_index("longitude", "I", I);
-      current_statement__ = 44;
+      current_statement__ = 38;
       context__.validate_dims("data initialization", "longitude", "double",
         std::vector<size_t>{static_cast<size_t>(I)});
       longitude_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
@@ -246,108 +228,31 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
         Eigen::Map<Eigen::Matrix<double,-1,1>>(longitude_data__.data(), I);
       {
         std::vector<local_scalar_t__> longitude_flat__;
-        current_statement__ = 44;
+        current_statement__ = 38;
         longitude_flat__ = context__.vals_r("longitude");
-        current_statement__ = 44;
+        current_statement__ = 38;
         pos__ = 1;
-        current_statement__ = 44;
+        current_statement__ = 38;
         for (int sym1__ = 1; sym1__ <= I; ++sym1__) {
-          current_statement__ = 44;
+          current_statement__ = 38;
           stan::model::assign(longitude, longitude_flat__[(pos__ - 1)],
             "assigning variable longitude", stan::model::index_uni(sym1__));
-          current_statement__ = 44;
+          current_statement__ = 38;
           pos__ = (pos__ + 1);
         }
       }
-      current_statement__ = 45;
-      stan::math::validate_non_negative_index("percent_conifer", "I", I);
-      current_statement__ = 46;
-      context__.validate_dims("data initialization", "percent_conifer",
-        "double", std::vector<size_t>{static_cast<size_t>(I)});
-      percent_conifer_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
-                                 std::numeric_limits<double>::quiet_NaN());
-      new (&percent_conifer)
-        Eigen::Map<Eigen::Matrix<double,-1,1>>(percent_conifer_data__.data(),
-        I);
-      {
-        std::vector<local_scalar_t__> percent_conifer_flat__;
-        current_statement__ = 46;
-        percent_conifer_flat__ = context__.vals_r("percent_conifer");
-        current_statement__ = 46;
-        pos__ = 1;
-        current_statement__ = 46;
-        for (int sym1__ = 1; sym1__ <= I; ++sym1__) {
-          current_statement__ = 46;
-          stan::model::assign(percent_conifer, percent_conifer_flat__[(pos__
-            - 1)], "assigning variable percent_conifer",
-            stan::model::index_uni(sym1__));
-          current_statement__ = 46;
-          pos__ = (pos__ + 1);
-        }
-      }
-      current_statement__ = 47;
-      stan::math::validate_non_negative_index("percent_deciduous", "I", I);
-      current_statement__ = 48;
-      context__.validate_dims("data initialization", "percent_deciduous",
-        "double", std::vector<size_t>{static_cast<size_t>(I)});
-      percent_deciduous_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
-                                   std::numeric_limits<double>::quiet_NaN());
-      new (&percent_deciduous)
-        Eigen::Map<Eigen::Matrix<double,-1,1>>(percent_deciduous_data__.data(),
-        I);
-      {
-        std::vector<local_scalar_t__> percent_deciduous_flat__;
-        current_statement__ = 48;
-        percent_deciduous_flat__ = context__.vals_r("percent_deciduous");
-        current_statement__ = 48;
-        pos__ = 1;
-        current_statement__ = 48;
-        for (int sym1__ = 1; sym1__ <= I; ++sym1__) {
-          current_statement__ = 48;
-          stan::model::assign(percent_deciduous,
-            percent_deciduous_flat__[(pos__ - 1)],
-            "assigning variable percent_deciduous",
-            stan::model::index_uni(sym1__));
-          current_statement__ = 48;
-          pos__ = (pos__ + 1);
-        }
-      }
-      current_statement__ = 49;
-      stan::math::validate_non_negative_index("percent_pine", "I", I);
-      current_statement__ = 50;
-      context__.validate_dims("data initialization", "percent_pine",
-        "double", std::vector<size_t>{static_cast<size_t>(I)});
-      percent_pine_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
-                              std::numeric_limits<double>::quiet_NaN());
-      new (&percent_pine)
-        Eigen::Map<Eigen::Matrix<double,-1,1>>(percent_pine_data__.data(), I);
-      {
-        std::vector<local_scalar_t__> percent_pine_flat__;
-        current_statement__ = 50;
-        percent_pine_flat__ = context__.vals_r("percent_pine");
-        current_statement__ = 50;
-        pos__ = 1;
-        current_statement__ = 50;
-        for (int sym1__ = 1; sym1__ <= I; ++sym1__) {
-          current_statement__ = 50;
-          stan::model::assign(percent_pine, percent_pine_flat__[(pos__ - 1)],
-            "assigning variable percent_pine", stan::model::index_uni(sym1__));
-          current_statement__ = 50;
-          pos__ = (pos__ + 1);
-        }
-      }
-      current_statement__ = 51;
+      current_statement__ = 39;
       stan::math::validate_non_negative_index("y", "I", I);
-      current_statement__ = 52;
+      current_statement__ = 40;
       stan::math::validate_non_negative_index("y", "J", J);
-      current_statement__ = 53;
+      current_statement__ = 41;
       y = std::vector<std::vector<int>>(I,
             std::vector<int>(J, std::numeric_limits<int>::min()));
-      current_statement__ = 58;
+      current_statement__ = 46;
       for (int i = 1; i <= I; ++i) {
-        current_statement__ = 56;
+        current_statement__ = 44;
         for (int j = 1; j <= J; ++j) {
-          current_statement__ = 54;
+          current_statement__ = 42;
           stan::model::assign(y,
             stan::math::logical_gt(
               stan::model::rvalue(N, "N", stan::model::index_uni(i),
@@ -355,14 +260,14 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
             stan::model::index_uni(i), stan::model::index_uni(j));
         }
       }
-      current_statement__ = 53;
+      current_statement__ = 41;
       stan::math::check_greater_or_equal(function__, "y", y, 0);
-      current_statement__ = 53;
+      current_statement__ = 41;
       stan::math::check_less_or_equal(function__, "y", y, 1);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
-    num_params_r__ = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1;
+    num_params_r__ = 1 + 1 + 1 + 1 + 1 + 1;
   }
   inline std::string model_name() const final {
     return "just_occupancy_model";
@@ -400,50 +305,32 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
       local_scalar_t__ beta_longitude = DUMMY_VAR__;
       current_statement__ = 3;
       beta_longitude = in__.template read<local_scalar_t__>();
-      local_scalar_t__ beta_percent_conifer = DUMMY_VAR__;
-      current_statement__ = 4;
-      beta_percent_conifer = in__.template read<local_scalar_t__>();
-      local_scalar_t__ beta_percent_deciduous = DUMMY_VAR__;
-      current_statement__ = 5;
-      beta_percent_deciduous = in__.template read<local_scalar_t__>();
-      local_scalar_t__ beta_percent_pine = DUMMY_VAR__;
-      current_statement__ = 6;
-      beta_percent_pine = in__.template read<local_scalar_t__>();
       local_scalar_t__ alpha_0 = DUMMY_VAR__;
-      current_statement__ = 7;
+      current_statement__ = 4;
       alpha_0 = in__.template read<local_scalar_t__>();
       local_scalar_t__ alpha_1 = DUMMY_VAR__;
-      current_statement__ = 8;
+      current_statement__ = 5;
       alpha_1 = in__.template read<local_scalar_t__>();
       local_scalar_t__ alpha_2 = DUMMY_VAR__;
-      current_statement__ = 9;
+      current_statement__ = 6;
       alpha_2 = in__.template read<local_scalar_t__>();
       {
-        current_statement__ = 10;
+        current_statement__ = 7;
         lp_accum__.add(stan::math::normal_lpdf<propto__>(beta_0, 0, 5));
-        current_statement__ = 11;
+        current_statement__ = 8;
         lp_accum__.add(stan::math::normal_lpdf<propto__>(beta_latitude, 0, 5));
-        current_statement__ = 12;
+        current_statement__ = 9;
         lp_accum__.add(stan::math::normal_lpdf<propto__>(beta_longitude, 0, 5));
-        current_statement__ = 13;
-        lp_accum__.add(stan::math::normal_lpdf<propto__>(
-                         beta_percent_conifer, 0, 5));
-        current_statement__ = 14;
-        lp_accum__.add(stan::math::normal_lpdf<propto__>(
-                         beta_percent_deciduous, 0, 5));
-        current_statement__ = 15;
-        lp_accum__.add(stan::math::normal_lpdf<propto__>(beta_percent_pine,
-                         0, 5));
-        current_statement__ = 16;
+        current_statement__ = 10;
         lp_accum__.add(stan::math::normal_lpdf<propto__>(alpha_0, 0, 5));
-        current_statement__ = 17;
+        current_statement__ = 11;
         lp_accum__.add(stan::math::normal_lpdf<propto__>(alpha_1, 0, 5));
-        current_statement__ = 18;
+        current_statement__ = 12;
         lp_accum__.add(stan::math::normal_lpdf<propto__>(alpha_2, 0, 5));
-        current_statement__ = 29;
+        current_statement__ = 23;
         for (int i = 1; i <= I; ++i) {
           local_scalar_t__ lin_pred_occupancy = DUMMY_VAR__;
-          current_statement__ = 19;
+          current_statement__ = 13;
           lin_pred_occupancy = ((beta_0 + (beta_latitude *
             stan::model::rvalue(latitude, "latitude",
               stan::model::index_uni(i))))
@@ -451,12 +338,12 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
             stan::model::rvalue(longitude, "longitude",
               stan::model::index_uni(i))));
           local_scalar_t__ psi_i = DUMMY_VAR__;
-          current_statement__ = 20;
+          current_statement__ = 14;
           psi_i = stan::math::inv_logit(lin_pred_occupancy);
-          current_statement__ = 27;
+          current_statement__ = 21;
           for (int j = 1; j <= J; ++j) {
             local_scalar_t__ lin_pred_detection = DUMMY_VAR__;
-            current_statement__ = 21;
+            current_statement__ = 15;
             lin_pred_detection = ((alpha_0 + (alpha_1 *
               stan::model::rvalue(time_of_day, "time_of_day",
                 stan::model::index_uni(i), stan::model::index_uni(j))))
@@ -464,21 +351,21 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
               stan::model::rvalue(Julian_date, "Julian_date",
                 stan::model::index_uni(i), stan::model::index_uni(j))));
             local_scalar_t__ p_ij = DUMMY_VAR__;
-            current_statement__ = 22;
+            current_statement__ = 16;
             p_ij = stan::math::inv_logit(lin_pred_detection);
             local_scalar_t__ log_lik_0 = DUMMY_VAR__;
-            current_statement__ = 23;
+            current_statement__ = 17;
             log_lik_0 = stan::math::bernoulli_lpmf<false>(
                           stan::model::rvalue(y, "y",
                             stan::model::index_uni(i),
                             stan::model::index_uni(j)), 0);
             local_scalar_t__ log_lik_1 = DUMMY_VAR__;
-            current_statement__ = 24;
+            current_statement__ = 18;
             log_lik_1 = stan::math::bernoulli_lpmf<false>(
                           stan::model::rvalue(y, "y",
                             stan::model::index_uni(i),
                             stan::model::index_uni(j)), p_ij);
-            current_statement__ = 25;
+            current_statement__ = 19;
             lp_accum__.add(stan::math::log_sum_exp(log_lik_0, (log_lik_1 +
                              stan::math::log(psi_i))));
           }
@@ -530,31 +417,18 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
       double beta_longitude = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 3;
       beta_longitude = in__.template read<local_scalar_t__>();
-      double beta_percent_conifer = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 4;
-      beta_percent_conifer = in__.template read<local_scalar_t__>();
-      double beta_percent_deciduous =
-        std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 5;
-      beta_percent_deciduous = in__.template read<local_scalar_t__>();
-      double beta_percent_pine = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 6;
-      beta_percent_pine = in__.template read<local_scalar_t__>();
       double alpha_0 = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 7;
+      current_statement__ = 4;
       alpha_0 = in__.template read<local_scalar_t__>();
       double alpha_1 = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 8;
+      current_statement__ = 5;
       alpha_1 = in__.template read<local_scalar_t__>();
       double alpha_2 = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 9;
+      current_statement__ = 6;
       alpha_2 = in__.template read<local_scalar_t__>();
       out__.write(beta_0);
       out__.write(beta_latitude);
       out__.write(beta_longitude);
-      out__.write(beta_percent_conifer);
-      out__.write(beta_percent_deciduous);
-      out__.write(beta_percent_pine);
       out__.write(alpha_0);
       out__.write(alpha_1);
       out__.write(alpha_2);
@@ -598,28 +472,16 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
       current_statement__ = 3;
       beta_longitude = in__.read<local_scalar_t__>();
       out__.write(beta_longitude);
-      local_scalar_t__ beta_percent_conifer = DUMMY_VAR__;
-      current_statement__ = 4;
-      beta_percent_conifer = in__.read<local_scalar_t__>();
-      out__.write(beta_percent_conifer);
-      local_scalar_t__ beta_percent_deciduous = DUMMY_VAR__;
-      current_statement__ = 5;
-      beta_percent_deciduous = in__.read<local_scalar_t__>();
-      out__.write(beta_percent_deciduous);
-      local_scalar_t__ beta_percent_pine = DUMMY_VAR__;
-      current_statement__ = 6;
-      beta_percent_pine = in__.read<local_scalar_t__>();
-      out__.write(beta_percent_pine);
       local_scalar_t__ alpha_0 = DUMMY_VAR__;
-      current_statement__ = 7;
+      current_statement__ = 4;
       alpha_0 = in__.read<local_scalar_t__>();
       out__.write(alpha_0);
       local_scalar_t__ alpha_1 = DUMMY_VAR__;
-      current_statement__ = 8;
+      current_statement__ = 5;
       alpha_1 = in__.read<local_scalar_t__>();
       out__.write(alpha_1);
       local_scalar_t__ alpha_2 = DUMMY_VAR__;
-      current_statement__ = 9;
+      current_statement__ = 6;
       alpha_2 = in__.read<local_scalar_t__>();
       out__.write(alpha_2);
     } catch (const std::exception& e) {
@@ -647,21 +509,12 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
       context__.validate_dims("parameter initialization", "beta_longitude",
         "double", std::vector<size_t>{});
       current_statement__ = 4;
-      context__.validate_dims("parameter initialization",
-        "beta_percent_conifer", "double", std::vector<size_t>{});
-      current_statement__ = 5;
-      context__.validate_dims("parameter initialization",
-        "beta_percent_deciduous", "double", std::vector<size_t>{});
-      current_statement__ = 6;
-      context__.validate_dims("parameter initialization",
-        "beta_percent_pine", "double", std::vector<size_t>{});
-      current_statement__ = 7;
       context__.validate_dims("parameter initialization", "alpha_0",
         "double", std::vector<size_t>{});
-      current_statement__ = 8;
+      current_statement__ = 5;
       context__.validate_dims("parameter initialization", "alpha_1",
         "double", std::vector<size_t>{});
-      current_statement__ = 9;
+      current_statement__ = 6;
       context__.validate_dims("parameter initialization", "alpha_2",
         "double", std::vector<size_t>{});
       int pos__ = std::numeric_limits<int>::min();
@@ -678,30 +531,16 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
       current_statement__ = 3;
       beta_longitude = context__.vals_r("beta_longitude")[(1 - 1)];
       out__.write(beta_longitude);
-      local_scalar_t__ beta_percent_conifer = DUMMY_VAR__;
-      current_statement__ = 4;
-      beta_percent_conifer = context__.vals_r("beta_percent_conifer")[(1 -
-        1)];
-      out__.write(beta_percent_conifer);
-      local_scalar_t__ beta_percent_deciduous = DUMMY_VAR__;
-      current_statement__ = 5;
-      beta_percent_deciduous = context__.vals_r("beta_percent_deciduous")[(1
-        - 1)];
-      out__.write(beta_percent_deciduous);
-      local_scalar_t__ beta_percent_pine = DUMMY_VAR__;
-      current_statement__ = 6;
-      beta_percent_pine = context__.vals_r("beta_percent_pine")[(1 - 1)];
-      out__.write(beta_percent_pine);
       local_scalar_t__ alpha_0 = DUMMY_VAR__;
-      current_statement__ = 7;
+      current_statement__ = 4;
       alpha_0 = context__.vals_r("alpha_0")[(1 - 1)];
       out__.write(alpha_0);
       local_scalar_t__ alpha_1 = DUMMY_VAR__;
-      current_statement__ = 8;
+      current_statement__ = 5;
       alpha_1 = context__.vals_r("alpha_1")[(1 - 1)];
       out__.write(alpha_1);
       local_scalar_t__ alpha_2 = DUMMY_VAR__;
-      current_statement__ = 9;
+      current_statement__ = 6;
       alpha_2 = context__.vals_r("alpha_2")[(1 - 1)];
       out__.write(alpha_2);
     } catch (const std::exception& e) {
@@ -713,9 +552,7 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
                   emit_transformed_parameters__ = true, const bool
                   emit_generated_quantities__ = true) const {
     names__ = std::vector<std::string>{"beta_0", "beta_latitude",
-                "beta_longitude", "beta_percent_conifer",
-                "beta_percent_deciduous", "beta_percent_pine", "alpha_0",
-                "alpha_1", "alpha_2"};
+                "beta_longitude", "alpha_0", "alpha_1", "alpha_2"};
     if (emit_transformed_parameters__) {}
     if (emit_generated_quantities__) {}
   }
@@ -726,8 +563,7 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
     dimss__ = std::vector<std::vector<size_t>>{std::vector<size_t>{},
                 std::vector<size_t>{}, std::vector<size_t>{},
                 std::vector<size_t>{}, std::vector<size_t>{},
-                std::vector<size_t>{}, std::vector<size_t>{},
-                std::vector<size_t>{}, std::vector<size_t>{}};
+                std::vector<size_t>{}};
     if (emit_transformed_parameters__) {}
     if (emit_generated_quantities__) {}
   }
@@ -738,9 +574,6 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
     param_names__.emplace_back(std::string() + "beta_0");
     param_names__.emplace_back(std::string() + "beta_latitude");
     param_names__.emplace_back(std::string() + "beta_longitude");
-    param_names__.emplace_back(std::string() + "beta_percent_conifer");
-    param_names__.emplace_back(std::string() + "beta_percent_deciduous");
-    param_names__.emplace_back(std::string() + "beta_percent_pine");
     param_names__.emplace_back(std::string() + "alpha_0");
     param_names__.emplace_back(std::string() + "alpha_1");
     param_names__.emplace_back(std::string() + "alpha_2");
@@ -754,9 +587,6 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
     param_names__.emplace_back(std::string() + "beta_0");
     param_names__.emplace_back(std::string() + "beta_latitude");
     param_names__.emplace_back(std::string() + "beta_longitude");
-    param_names__.emplace_back(std::string() + "beta_percent_conifer");
-    param_names__.emplace_back(std::string() + "beta_percent_deciduous");
-    param_names__.emplace_back(std::string() + "beta_percent_pine");
     param_names__.emplace_back(std::string() + "alpha_0");
     param_names__.emplace_back(std::string() + "alpha_1");
     param_names__.emplace_back(std::string() + "alpha_2");
@@ -764,10 +594,10 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
     if (emit_generated_quantities__) {}
   }
   inline std::string get_constrained_sizedtypes() const {
-    return std::string("[{\"name\":\"beta_0\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_latitude\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_longitude\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_percent_conifer\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_percent_deciduous\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_percent_pine\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_0\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_1\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_2\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"}]");
+    return std::string("[{\"name\":\"beta_0\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_latitude\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_longitude\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_0\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_1\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_2\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"}]");
   }
   inline std::string get_unconstrained_sizedtypes() const {
-    return std::string("[{\"name\":\"beta_0\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_latitude\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_longitude\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_percent_conifer\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_percent_deciduous\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_percent_pine\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_0\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_1\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_2\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"}]");
+    return std::string("[{\"name\":\"beta_0\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_latitude\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_longitude\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_0\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_1\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha_2\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"}]");
   }
   // Begin method overload boilerplate
   template <typename RNG> inline void
@@ -776,8 +606,7 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
               emit_transformed_parameters = true, const bool
               emit_generated_quantities = true, std::ostream*
               pstream = nullptr) const {
-    const size_t num_params__ = ((((((((1 + 1) + 1) + 1) + 1) + 1) + 1) + 1)
-      + 1);
+    const size_t num_params__ = (((((1 + 1) + 1) + 1) + 1) + 1);
     const size_t num_transformed = emit_transformed_parameters * (0);
     const size_t num_gen_quantities = emit_generated_quantities * (0);
     const size_t num_to_write = num_params__ + num_transformed +
@@ -794,8 +623,7 @@ class just_occupancy_model final : public model_base_crtp<just_occupancy_model> 
               emit_transformed_parameters = true, bool
               emit_generated_quantities = true, std::ostream*
               pstream = nullptr) const {
-    const size_t num_params__ = ((((((((1 + 1) + 1) + 1) + 1) + 1) + 1) + 1)
-      + 1);
+    const size_t num_params__ = (((((1 + 1) + 1) + 1) + 1) + 1);
     const size_t num_transformed = emit_transformed_parameters * (0);
     const size_t num_gen_quantities = emit_generated_quantities * (0);
     const size_t num_to_write = num_params__ + num_transformed +

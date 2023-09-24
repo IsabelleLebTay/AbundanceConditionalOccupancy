@@ -10,9 +10,9 @@ data {
   // site-level covariates for occupancy
   vector[I] latitude;
   vector[I] longitude;
-  vector[I] percent_conifer;
+/*  vector[I] percent_conifer;
   vector[I] percent_deciduous;
-  vector[I] percent_pine;
+  vector[I] percent_pine; */
 }
 
 transformed data {
@@ -28,9 +28,9 @@ parameters {
   real beta_0;  // Intercept for occupancy probability
   real beta_latitude;
   real beta_longitude;
-  real beta_percent_conifer;
+ /* real beta_percent_conifer;
   real beta_percent_deciduous;
-  real beta_percent_pine;
+  real beta_percent_pine; */
 
   real alpha_0;  // Intercept for detection probability
   real alpha_1;  // Coefficient for time_of_day
@@ -42,9 +42,9 @@ model {
   beta_0 ~ normal(0, 5);
   beta_latitude ~ normal(0, 5);
   beta_longitude ~ normal(0, 5);
-  beta_percent_conifer ~ normal(0, 5);
+ /* beta_percent_conifer ~ normal(0, 5);
   beta_percent_deciduous ~ normal(0, 5);
-  beta_percent_pine ~ normal(0, 5);
+  beta_percent_pine ~ normal(0, 5); */
 
   // Priors for detection probability coefficients
   alpha_0 ~ normal(0, 5);

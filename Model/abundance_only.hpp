@@ -4,37 +4,43 @@ namespace abundance_only_model_namespace {
 using stan::model::model_base_crtp;
 using namespace stan::math;
 stan::math::profile_map profiles__;
-static constexpr std::array<const char*, 22> locations_array__ =
+static constexpr std::array<const char*, 26> locations_array__ =
   {" (found before start of program)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 40, column 4 to column 33)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 41, column 4 to column 15)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 42, column 4 to column 14)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 43, column 4 to column 19)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 46, column 4 to column 24)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 47, column 4 to column 28)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 51, column 8 to column 73)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 57, column 8 to line 58, column 44)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 56, column 11 to line 59, column 9)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 53, column 12 to line 55, column 53)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 52, column 23 to line 56, column 5)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 52, column 8 to line 59, column 9)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 49, column 19 to line 60, column 5)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 49, column 4 to line 60, column 5)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 41, column 4 to column 33)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 42, column 4 to column 15)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 43, column 4 to column 18)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 44, column 4 to column 19)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 45, column 4 to column 22)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 48, column 4 to column 28)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 49, column 4 to column 29)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 50, column 4 to column 32)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 54, column 8 to column 114)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 60, column 8 to line 61, column 44)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 59, column 11 to line 62, column 9)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 56, column 12 to line 58, column 53)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 55, column 23 to line 59, column 5)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 55, column 8 to line 62, column 9)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 52, column 19 to line 63, column 5)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 52, column 4 to line 63, column 5)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 33, column 4 to column 19)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 34, column 10 to column 11)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 34, column 4 to column 28)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 35, column 11 to column 12)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 35, column 4 to column 18)",
   " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 36, column 11 to column 12)",
-  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 36, column 4 to column 19)"};
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 36, column 4 to column 19)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 37, column 11 to column 12)",
+  " (in 'C:/Users/ilebe/Documents/!Masters!/Analysis/AbundanceConditionalOccupancy/Model/abundance_only.stan', line 37, column 4 to column 30)"};
 class abundance_only_model final : public model_base_crtp<abundance_only_model> {
  private:
   int I;
   std::vector<int> M;
   Eigen::Matrix<double,-1,1> age_data__;
   Eigen::Matrix<double,-1,1> size_data__;
+  Eigen::Matrix<double,-1,1> percent_conifer_data__;
   Eigen::Map<Eigen::Matrix<double,-1,1>> age{nullptr, 0};
   Eigen::Map<Eigen::Matrix<double,-1,1>> size{nullptr, 0};
+  Eigen::Map<Eigen::Matrix<double,-1,1>> percent_conifer{nullptr, 0};
  public:
   ~abundance_only_model() {}
   abundance_only_model(stan::io::var_context& context__, unsigned int
@@ -56,27 +62,27 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
     try {
       int pos__ = std::numeric_limits<int>::min();
       pos__ = 1;
-      current_statement__ = 15;
+      current_statement__ = 17;
       context__.validate_dims("data initialization", "I", "int",
         std::vector<size_t>{});
       I = std::numeric_limits<int>::min();
-      current_statement__ = 15;
-      I = context__.vals_i("I")[(1 - 1)];
-      current_statement__ = 15;
-      stan::math::check_greater_or_equal(function__, "I", I, 0);
-      current_statement__ = 16;
-      stan::math::validate_non_negative_index("M", "I", I);
       current_statement__ = 17;
+      I = context__.vals_i("I")[(1 - 1)];
+      current_statement__ = 17;
+      stan::math::check_greater_or_equal(function__, "I", I, 0);
+      current_statement__ = 18;
+      stan::math::validate_non_negative_index("M", "I", I);
+      current_statement__ = 19;
       context__.validate_dims("data initialization", "M", "int",
         std::vector<size_t>{static_cast<size_t>(I)});
       M = std::vector<int>(I, std::numeric_limits<int>::min());
-      current_statement__ = 17;
-      M = context__.vals_i("M");
-      current_statement__ = 17;
-      stan::math::check_greater_or_equal(function__, "M", M, 0);
-      current_statement__ = 18;
-      stan::math::validate_non_negative_index("age", "I", I);
       current_statement__ = 19;
+      M = context__.vals_i("M");
+      current_statement__ = 19;
+      stan::math::check_greater_or_equal(function__, "M", M, 0);
+      current_statement__ = 20;
+      stan::math::validate_non_negative_index("age", "I", I);
+      current_statement__ = 21;
       context__.validate_dims("data initialization", "age", "double",
         std::vector<size_t>{static_cast<size_t>(I)});
       age_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
@@ -84,22 +90,22 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
       new (&age) Eigen::Map<Eigen::Matrix<double,-1,1>>(age_data__.data(), I);
       {
         std::vector<local_scalar_t__> age_flat__;
-        current_statement__ = 19;
+        current_statement__ = 21;
         age_flat__ = context__.vals_r("age");
-        current_statement__ = 19;
+        current_statement__ = 21;
         pos__ = 1;
-        current_statement__ = 19;
+        current_statement__ = 21;
         for (int sym1__ = 1; sym1__ <= I; ++sym1__) {
-          current_statement__ = 19;
+          current_statement__ = 21;
           stan::model::assign(age, age_flat__[(pos__ - 1)],
             "assigning variable age", stan::model::index_uni(sym1__));
-          current_statement__ = 19;
+          current_statement__ = 21;
           pos__ = (pos__ + 1);
         }
       }
-      current_statement__ = 20;
+      current_statement__ = 22;
       stan::math::validate_non_negative_index("size", "I", I);
-      current_statement__ = 21;
+      current_statement__ = 23;
       context__.validate_dims("data initialization", "size", "double",
         std::vector<size_t>{static_cast<size_t>(I)});
       size_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
@@ -108,23 +114,49 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
         I);
       {
         std::vector<local_scalar_t__> size_flat__;
-        current_statement__ = 21;
+        current_statement__ = 23;
         size_flat__ = context__.vals_r("size");
-        current_statement__ = 21;
+        current_statement__ = 23;
         pos__ = 1;
-        current_statement__ = 21;
+        current_statement__ = 23;
         for (int sym1__ = 1; sym1__ <= I; ++sym1__) {
-          current_statement__ = 21;
+          current_statement__ = 23;
           stan::model::assign(size, size_flat__[(pos__ - 1)],
             "assigning variable size", stan::model::index_uni(sym1__));
-          current_statement__ = 21;
+          current_statement__ = 23;
+          pos__ = (pos__ + 1);
+        }
+      }
+      current_statement__ = 24;
+      stan::math::validate_non_negative_index("percent_conifer", "I", I);
+      current_statement__ = 25;
+      context__.validate_dims("data initialization", "percent_conifer",
+        "double", std::vector<size_t>{static_cast<size_t>(I)});
+      percent_conifer_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
+                                 std::numeric_limits<double>::quiet_NaN());
+      new (&percent_conifer)
+        Eigen::Map<Eigen::Matrix<double,-1,1>>(percent_conifer_data__.data(),
+        I);
+      {
+        std::vector<local_scalar_t__> percent_conifer_flat__;
+        current_statement__ = 25;
+        percent_conifer_flat__ = context__.vals_r("percent_conifer");
+        current_statement__ = 25;
+        pos__ = 1;
+        current_statement__ = 25;
+        for (int sym1__ = 1; sym1__ <= I; ++sym1__) {
+          current_statement__ = 25;
+          stan::model::assign(percent_conifer, percent_conifer_flat__[(pos__
+            - 1)], "assigning variable percent_conifer",
+            stan::model::index_uni(sym1__));
+          current_statement__ = 25;
           pos__ = (pos__ + 1);
         }
       }
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
-    num_params_r__ = 1 + 1 + 1 + 1;
+    num_params_r__ = 1 + 1 + 1 + 1 + 1;
   }
   inline std::string model_name() const final {
     return "abundance_only_model";
@@ -160,37 +192,44 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
       local_scalar_t__ alpha = DUMMY_VAR__;
       current_statement__ = 2;
       alpha = in__.template read<local_scalar_t__>();
-      local_scalar_t__ beta = DUMMY_VAR__;
+      local_scalar_t__ beta_age = DUMMY_VAR__;
       current_statement__ = 3;
-      beta = in__.template read<local_scalar_t__>();
+      beta_age = in__.template read<local_scalar_t__>();
       local_scalar_t__ beta_size = DUMMY_VAR__;
       current_statement__ = 4;
       beta_size = in__.template read<local_scalar_t__>();
+      local_scalar_t__ beta_conifer = DUMMY_VAR__;
+      current_statement__ = 5;
+      beta_conifer = in__.template read<local_scalar_t__>();
       {
-        current_statement__ = 5;
-        lp_accum__.add(stan::math::normal_lpdf<propto__>(beta, 0, 10));
         current_statement__ = 6;
-        lp_accum__.add(stan::math::normal_lpdf<propto__>(beta_size, 0, 5));
-        current_statement__ = 14;
+        lp_accum__.add(stan::math::normal_lpdf<propto__>(beta_age, 0, 10));
+        current_statement__ = 7;
+        lp_accum__.add(stan::math::normal_lpdf<propto__>(beta_size, 0, 10));
+        current_statement__ = 8;
+        lp_accum__.add(stan::math::normal_lpdf<propto__>(beta_conifer, 0, 10));
+        current_statement__ = 16;
         for (int i = 1; i <= I; ++i) {
           local_scalar_t__ lambda_i = DUMMY_VAR__;
-          current_statement__ = 7;
-          lambda_i = stan::math::exp(((alpha + (beta *
+          current_statement__ = 9;
+          lambda_i = stan::math::exp((((alpha + (beta_age *
                        stan::model::rvalue(age, "age",
                          stan::model::index_uni(i)))) + (beta_size *
                        stan::model::rvalue(size, "size",
-                         stan::model::index_uni(i)))));
-          current_statement__ = 12;
+                         stan::model::index_uni(i)))) + (beta_conifer *
+                       stan::model::rvalue(percent_conifer,
+                         "percent_conifer", stan::model::index_uni(i)))));
+          current_statement__ = 14;
           if (stan::math::logical_eq(
                 stan::model::rvalue(M, "M", stan::model::index_uni(i)), 0)) {
-            current_statement__ = 10;
+            current_statement__ = 12;
             lp_accum__.add(stan::math::log_sum_exp(stan::math::log(theta),
                              (stan::math::log1m(theta) +
                              stan::math::poisson_lpmf<false>(
                                stan::model::rvalue(M, "M",
                                  stan::model::index_uni(i)), lambda_i))));
           } else {
-            current_statement__ = 8;
+            current_statement__ = 10;
             lp_accum__.add((stan::math::log1m(theta) +
               stan::math::poisson_lpmf<false>(
                 stan::model::rvalue(M, "M", stan::model::index_uni(i)),
@@ -242,16 +281,20 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
       double alpha = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 2;
       alpha = in__.template read<local_scalar_t__>();
-      double beta = std::numeric_limits<double>::quiet_NaN();
+      double beta_age = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 3;
-      beta = in__.template read<local_scalar_t__>();
+      beta_age = in__.template read<local_scalar_t__>();
       double beta_size = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 4;
       beta_size = in__.template read<local_scalar_t__>();
+      double beta_conifer = std::numeric_limits<double>::quiet_NaN();
+      current_statement__ = 5;
+      beta_conifer = in__.template read<local_scalar_t__>();
       out__.write(theta);
       out__.write(alpha);
-      out__.write(beta);
+      out__.write(beta_age);
       out__.write(beta_size);
+      out__.write(beta_conifer);
       if (stan::math::logical_negation(
             (stan::math::primitive_value(emit_transformed_parameters__) ||
             stan::math::primitive_value(emit_generated_quantities__)))) {
@@ -288,14 +331,18 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
       current_statement__ = 2;
       alpha = in__.read<local_scalar_t__>();
       out__.write(alpha);
-      local_scalar_t__ beta = DUMMY_VAR__;
+      local_scalar_t__ beta_age = DUMMY_VAR__;
       current_statement__ = 3;
-      beta = in__.read<local_scalar_t__>();
-      out__.write(beta);
+      beta_age = in__.read<local_scalar_t__>();
+      out__.write(beta_age);
       local_scalar_t__ beta_size = DUMMY_VAR__;
       current_statement__ = 4;
       beta_size = in__.read<local_scalar_t__>();
       out__.write(beta_size);
+      local_scalar_t__ beta_conifer = DUMMY_VAR__;
+      current_statement__ = 5;
+      beta_conifer = in__.read<local_scalar_t__>();
+      out__.write(beta_conifer);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -318,10 +365,13 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
       context__.validate_dims("parameter initialization", "alpha", "double",
         std::vector<size_t>{});
       current_statement__ = 3;
-      context__.validate_dims("parameter initialization", "beta", "double",
-        std::vector<size_t>{});
+      context__.validate_dims("parameter initialization", "beta_age",
+        "double", std::vector<size_t>{});
       current_statement__ = 4;
       context__.validate_dims("parameter initialization", "beta_size",
+        "double", std::vector<size_t>{});
+      current_statement__ = 5;
+      context__.validate_dims("parameter initialization", "beta_conifer",
         "double", std::vector<size_t>{});
       int pos__ = std::numeric_limits<int>::min();
       pos__ = 1;
@@ -333,14 +383,18 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
       current_statement__ = 2;
       alpha = context__.vals_r("alpha")[(1 - 1)];
       out__.write(alpha);
-      local_scalar_t__ beta = DUMMY_VAR__;
+      local_scalar_t__ beta_age = DUMMY_VAR__;
       current_statement__ = 3;
-      beta = context__.vals_r("beta")[(1 - 1)];
-      out__.write(beta);
+      beta_age = context__.vals_r("beta_age")[(1 - 1)];
+      out__.write(beta_age);
       local_scalar_t__ beta_size = DUMMY_VAR__;
       current_statement__ = 4;
       beta_size = context__.vals_r("beta_size")[(1 - 1)];
       out__.write(beta_size);
+      local_scalar_t__ beta_conifer = DUMMY_VAR__;
+      current_statement__ = 5;
+      beta_conifer = context__.vals_r("beta_conifer")[(1 - 1)];
+      out__.write(beta_conifer);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -349,7 +403,8 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
   get_param_names(std::vector<std::string>& names__, const bool
                   emit_transformed_parameters__ = true, const bool
                   emit_generated_quantities__ = true) const {
-    names__ = std::vector<std::string>{"theta", "alpha", "beta", "beta_size"};
+    names__ = std::vector<std::string>{"theta", "alpha", "beta_age",
+                "beta_size", "beta_conifer"};
     if (emit_transformed_parameters__) {}
     if (emit_generated_quantities__) {}
   }
@@ -359,7 +414,7 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
            emit_generated_quantities__ = true) const {
     dimss__ = std::vector<std::vector<size_t>>{std::vector<size_t>{},
                 std::vector<size_t>{}, std::vector<size_t>{},
-                std::vector<size_t>{}};
+                std::vector<size_t>{}, std::vector<size_t>{}};
     if (emit_transformed_parameters__) {}
     if (emit_generated_quantities__) {}
   }
@@ -369,8 +424,9 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
                           emit_generated_quantities__ = true) const final {
     param_names__.emplace_back(std::string() + "theta");
     param_names__.emplace_back(std::string() + "alpha");
-    param_names__.emplace_back(std::string() + "beta");
+    param_names__.emplace_back(std::string() + "beta_age");
     param_names__.emplace_back(std::string() + "beta_size");
+    param_names__.emplace_back(std::string() + "beta_conifer");
     if (emit_transformed_parameters__) {}
     if (emit_generated_quantities__) {}
   }
@@ -380,16 +436,17 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
                             emit_generated_quantities__ = true) const final {
     param_names__.emplace_back(std::string() + "theta");
     param_names__.emplace_back(std::string() + "alpha");
-    param_names__.emplace_back(std::string() + "beta");
+    param_names__.emplace_back(std::string() + "beta_age");
     param_names__.emplace_back(std::string() + "beta_size");
+    param_names__.emplace_back(std::string() + "beta_conifer");
     if (emit_transformed_parameters__) {}
     if (emit_generated_quantities__) {}
   }
   inline std::string get_constrained_sizedtypes() const {
-    return std::string("[{\"name\":\"theta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_size\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"}]");
+    return std::string("[{\"name\":\"theta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_age\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_size\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_conifer\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"}]");
   }
   inline std::string get_unconstrained_sizedtypes() const {
-    return std::string("[{\"name\":\"theta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_size\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"}]");
+    return std::string("[{\"name\":\"theta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_age\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_size\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta_conifer\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"}]");
   }
   // Begin method overload boilerplate
   template <typename RNG> inline void
@@ -398,7 +455,7 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
               emit_transformed_parameters = true, const bool
               emit_generated_quantities = true, std::ostream*
               pstream = nullptr) const {
-    const size_t num_params__ = (((1 + 1) + 1) + 1);
+    const size_t num_params__ = ((((1 + 1) + 1) + 1) + 1);
     const size_t num_transformed = emit_transformed_parameters * (0);
     const size_t num_gen_quantities = emit_generated_quantities * (0);
     const size_t num_to_write = num_params__ + num_transformed +
@@ -415,7 +472,7 @@ class abundance_only_model final : public model_base_crtp<abundance_only_model> 
               emit_transformed_parameters = true, bool
               emit_generated_quantities = true, std::ostream*
               pstream = nullptr) const {
-    const size_t num_params__ = (((1 + 1) + 1) + 1);
+    const size_t num_params__ = ((((1 + 1) + 1) + 1) + 1);
     const size_t num_transformed = emit_transformed_parameters * (0);
     const size_t num_gen_quantities = emit_generated_quantities * (0);
     const size_t num_to_write = num_params__ + num_transformed +

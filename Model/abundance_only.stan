@@ -34,21 +34,24 @@ data {
     array[I] int<lower=0> M;
     vector[I] age;
     vector[I] size;
+    vector[I] percent_conifer;
 }
 
 parameters {
     real<lower=0, upper=1> theta;
     real alpha; // Intercept
-    real beta; // Coefficient for the size covariate
+    real beta_age; // Coefficient for the age
     real beta_size;
+    real beta_conifer;
 }
 model {
-    beta ~ normal(0,10);
-    beta_size ~ normal(0,5);
+    beta_age ~ normal(0,10);
+    beta_size ~ normal(0,10);
+    beta_conifer ~ normal(0,10);
 
     for (i in 1:I) {
         // Calculate lambda using the size covariate
-        real lambda_i = exp(alpha + beta * age[i] + beta_size * size[i]);
+        real lambda_i = exp(alpha + beta_age * age[i] + beta_size * size[i] + beta_conifer * percent_conifer[i] );
         if (M[i] == 0) {
             target += log_sum_exp(log(theta),
                 log1m(theta)
