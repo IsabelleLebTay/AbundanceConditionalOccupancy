@@ -99,9 +99,9 @@ Stan has a built-in Zero-Inflated Poisson models, described in Chapter 5 of the 
 
 The probabilities of observing 0 and non-0 are described by two different distributions. 
 
-\[ y_n =
+$$ y_n =
   \begin{cases}
     0       & \quad \text{with probability } \theta \\
     Poisson(y_n | \lambda)  & \quad \text{with probability } 1 - \theta
   \end{cases}
-\]
+$$
