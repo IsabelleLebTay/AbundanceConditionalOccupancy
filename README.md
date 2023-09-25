@@ -18,6 +18,8 @@ Detection of individuals, at the abundance level of the model, is related to two
 
 This model is applied to a multi-visit framework where there are 414 sites and 15 visits per site.
 
+*Add*: interaction between retention amount and time since disturbance
+
 **First step: Occupancy and detection probability:**
 
 $z_i$ is the true estimated occupancy state.
@@ -135,3 +137,4 @@ p_i = 1 ( 1 - \theta_{i, j})^{N_{i, j}}
 $$
 
 where $\theta_{i, j}$ is the per individual detection probability at site i, visit j. 
+
