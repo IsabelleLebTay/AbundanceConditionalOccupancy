@@ -117,3 +117,21 @@ $$ p(y_n | \theta, \lambda) =
 $$
 
 In this mixture model where $\lambda \in \{0, 1\}$, each component of the mixture will be estimated with effect data sizes of $\theta$ $N$ and (1 - $\theta$) $N$. 
+
+We need to decide whether the local observed abundance, M_i, is equal to the latent abundance or needs to be used to estimate the true abundance. The observations we have is the local abundance at visit j. The parameters of interest in the model are not at the visit-level, but at the site level (retention size, habitat, etc). The counts are not equal across visits for the same sites; this indicates we are better off treating those as an imperfect observations of the true local latent population size. How do we relate the visit-level abundance to an estimate latent site-level abundance?
+
+**Detection**
+
+Detection probability, $p$,  related to the ocucpancy of a site as $y_{ij}$ ~ Bernoulli($p$), is heterogeneous between visits at the same site. Royle and Nichols (2003) note that heterogeneity in p can be induced by variation in abundance between visits. Let $N_i$ be the abundance at site $i$. The net probability of detection of at least one individual at site $i% is
+
+$$
+p_i = 1 ( 1 - \theta)^{N_i}
+$$
+
+Rossman et al. (2016), rewrite this detection probability as 
+
+$$
+p_i = 1 ( 1 - \theta_{i, j})^{N_{i, j}}
+$$
+
+where $\theta_{i, j}$ is the per individual detection probability at site i, visit j. 
