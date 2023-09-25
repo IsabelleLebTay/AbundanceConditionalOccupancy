@@ -72,13 +72,15 @@ where the parameter of the Poisson distribution is dependent on the true occupan
 Stan does not support sampling discrete parameters (Stan user guide, Chap. 7). The latent occupancy state, z, is an estimated integer. Although Stan does not directly support this (which is possible in BUGS/JAGS), similar sampling is possible through marginalizing out the latent discrete parameters.
 
 *Marginalisation on the dicrete latent parameters*
+1. Occupancy
+
 I am trying to estimate a discrete variable (occupancy), and Stan fundamentally doesn't sample a distribution from a non-continuous distribution. Their work around is to marginalise on the discrete parameter and sample from a continuous distribution that is derived from the discrete parameter. Marginalising over a discrete parameter indicates summing over the likelihood or the joint distribution for all its possible values. We are targetting the marginalisation of the Bernoulli-distributed latent discrete occupancy parameter $z$, given the data $y$, and the continuous parameter $(\psi)$. The joint distribution of the data an parameters can be written as:
 
 $$
 p(data|\psi, z) = p(data|\psi, z) * p(\psi) * p(z)
 $$
 
-where p(data|$\psi$, z) is the likelihood of the data given the parameters, p($\psi$) is the prior on $\psi$ (in our case the log-linked linear expression), and p(z) is the Bernoulli distribution of z.
+where p(data| $\psi$, z) is the likelihood of the data given the parameters, p($\psi$) is the prior on $\psi$ (in our case the log-linked linear expression), and p(z) is the Bernoulli distribution of z.
 
 To marginalise out z, the sum of all possible values of z is:
 
@@ -88,7 +90,18 @@ $$
 
 This will provide Stan a continuous distribution in terms of the data and the parameter $\psi$ from which to sample.
 
-In the model block, Stan implements the marginalisation on a discrete latent variable with the notation target +=. The target keyword represents the logarithm of the joint density (or posteriro density, depending on context) being modeled. The += operation increments the value of the target distribution. 
+In the model block, Stan implements the marginalisation on a discrete latent variable with the notation target +=. The target keyword represents the logarithm of the joint density (or posterior density, depending on context) being modeled. The += operation increments the value of the target distribution. 
 
 
-The local abundance is not an int so we're fine?
+2. Abundance
+
+Stan has a built-in Zero-Inflated Poisson models, described in Chapter 5 of the user manual.
+
+The probabilities of observing 0 and non-0 are described by two different distributions. 
+
+\[ y_n =
+  \begin{cases}
+    0       & \quad \text{with probability } \theta \\
+    Poisson(y_n | \lambda)  & \quad \text{with probability } 1 - \theta
+  \end{cases}
+\]
