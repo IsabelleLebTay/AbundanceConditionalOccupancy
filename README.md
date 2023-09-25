@@ -99,9 +99,21 @@ Stan has a built-in Zero-Inflated Poisson models, described in Chapter 5 of the 
 
 The probabilities of observing 0 and non-0 are described by two different distributions. 
 
-$$ y_n =
+$$ y_n ~
   \begin{cases}
     0       & \quad \text{with probability } \theta \\
     Poisson(y_n | \lambda)  & \quad \text{with probability } 1 - \theta
   \end{cases}
 $$
+
+
+Because Stan does not support sampling conditional on some parameter (with ~), we consider the corresponding likelihoods:
+
+$$ p(y_n | \theta, \lambda) =
+  \begin{cases}
+    \theta + (1 - \theta) * Poisson(\theta | \lambda)       & \quad \text{if } y_n = 0 \\
+    (1 - \theta) * Poisson(y_n | \lambda)  & \quad \text{if} y_n > 0
+  \end{cases}
+$$
+
+In this mixture model where $\lambda \in \{0, 1\}$, each component of the mixture will be estimated with effect data sizes of $\theta$ $N$ and (1 - $\theta$) $N$. 

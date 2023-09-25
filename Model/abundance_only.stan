@@ -53,8 +53,8 @@ model {
         // Calculate lambda using the size covariate
         real lambda_i = exp(alpha + beta_age * age[i] + beta_size * size[i] + beta_conifer * percent_conifer[i] );
         if (M[i] == 0) {
-            target += log_sum_exp(log(theta),
-                log1m(theta)
+            target += log_sum_exp(log(theta), \\ log_sum_exp(arg1, arg2) is the same as  log(exp(arg1) + exp(arg2))
+                log1m(theta) \\ this computes log(1-theta)
                     + poisson_lpmf(M[i] | lambda_i));
     } else {
         target += log1m(theta)
