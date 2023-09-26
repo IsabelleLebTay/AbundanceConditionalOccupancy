@@ -1,7 +1,8 @@
 # AbundanceConditionalOccupancy
 
 
-![Alt text](Model/images/goergeous harvest high res.png)
+![Alt text](images/goergeous harvest high res.png)
+
 
 
 This model is for a single species, and will be replicated for 6 different bird species. They are all migratory boreal songbirds and I expect they will react differently to the environmental conditions reflected in the model both due to the species distribution and regional density, their habitat preferences, and their vocal/territorial behaviours.

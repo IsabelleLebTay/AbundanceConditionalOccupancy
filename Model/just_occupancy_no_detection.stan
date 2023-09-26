@@ -29,6 +29,12 @@ model {
   beta_percent_deciduous ~ normal(0, 5);
   beta_percent_pine ~ normal(0, 5); */
 
+vector [I] lin_pred_occupancy = beta_0 + 
+                              beta_latitude * latitude + 
+                              beta_longitude * longitude;
+
+y ~ Bernoulli_logit(lin_pred_occupancy);
+
   for (i in 1:I) {
     // Linear predictor for occupancy probability for site i
     real lin_pred_occupancy = beta_0 + 
@@ -42,4 +48,14 @@ model {
     // Bernoulli likelihood for site i
     y[i] ~ bernoulli(psi_i);
   }
+}
+
+generated quantities{
+
+  vector[I] yrep;
+  for (i in 1:I) {
+y_rep[I] = Bernoulli_logit_rng(lin_pred_occupancy[i]) ;
+  }
+
+
 }
