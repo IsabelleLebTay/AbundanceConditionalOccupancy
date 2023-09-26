@@ -1,7 +1,7 @@
 # AbundanceConditionalOccupancy
 
 
-![Alt text](images/goergeous harvest high res.png)
+![Satellite image of harvest](images/harvest_image_satellite.png)
 
 
 
