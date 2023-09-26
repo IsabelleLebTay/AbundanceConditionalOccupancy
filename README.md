@@ -1,24 +1,38 @@
 # AbundanceConditionalOccupancy
 
-This model is for a single species, and will be replicated for 6 different bird species. They are all migratory boreal songbirds and I expect they will react differnetly to the environmental conditions reflected in the model both due to the species distribution, the regional density, their habitat preferences, and their vocal/territorial behaviours.
+This model is for a single species, and will be replicated for 6 different bird species. They are all migratory boreal songbirds and I expect they will react differently to the environmental conditions reflected in the model both due to the species distribution and regional density, their habitat preferences, and their vocal/territorial behaviours.
 
-The data was gathered using ARUs (Autonomous Recording Units) and processed during the first few hours around dawn. All deteceted individuals of each species of interest is tagged.
+The data was gathered using ARUs (Autonomous Recording Units) and processed during the first few hours around dawn. All detected individuals of each species of interest is tagged (WTSP, TEWA, REVI, OSFL, YRWA, RCKI).
 
-This single-species integrated abundance-occupancy model addresses the different ecological processes that affect the measures of occupancy and abundance.
+This single-species integrated abundance-occupancy model described below addresses the different ecological processes that affect the measures of occupancy and abundance.
 
-The two observations we have are presence/absence and count for each site per recording, or visit.
+The two observations we have are: detection of presence/non-detection (related to occupancy through the detection probability) and individual (unmarked) count at each site for 10-15 occasions, or visit. The visits are not menat to be independant replicates: they all occur within a few days and there are several per morning.
 
-Occupancy is related to whether the species is present or not given the environmental conditions. The assumptions are that, because of the regional spread of the data, one of the largest factor in the species occupancy/distribution is latitude and longitude. Additionally, we might consider forest type.
+The question we are attempting to answer with this model is: *Is the recovery rate of forest songbirds affected when there is a small amount of retention in a harvest?* This question arises from the common wisdom that an ylevel of retention in a harvest is beneficial. However, the scale of the retention patches in this study are much smaller than ever assessed before (~1-5% of the harvest area). So, we are seeing if this theory holds up to small-scale retention, which is prevalent across the province.
 
-Abundance is related to how many individuals occupy or use the area around the sampling unit (the ARU), given that the species is present. The factors presumably influencing this measure of density is the suitability of the habitat is supporting multiple individuals. This is assumed to be related to the size of the retention patch, the age of the harvest, and the proportion of each forest type in the sampling area.
+**Study design**
+To assess recovery, we have a gradient of 22 years of harvests (data was gathered in the last ~3 years), and in all major commercial forests (mixedwood, aspen, upland spruce, pine), across all FMA's (related to geographical timber allotments granted by the provincial government to differnet forestry companies).
+- 404+ sites sampled, considered indepent (more than minimum 300m away from each other)
+- In equal parts no retention and retention of as small as 1 tree, up to 20,000 m^2 (still fairly small). 
+- The visits (1 minute recordings) are transcribed in the online sound processing software Wildtrax and each unique individual per species is identified & tagged.
 
-Detection plays a large role in this model at both steps. The probability of detection for a species is of interest at the occupancy level of the model, because our multi-visit design optimises our detection rate. It will take information such as time of day and Julian date. In this model, this stage of detection rate will be the Probability of detection.
+*Occupancy*
 
-Detection of individuals, at the abundance level of the model, is related to two factors: the bird's movement and singing within its territory, and the distance at which we are sampling the bird when it sings and whether its cue is audible given the meteorological and forested conditions. At this stage the variance caused by heterogeneous detection probability between individuals will be addressed by an adjusted distance sampling function.
+Occupancy is related to whether the species is present or not given the environmental conditions. The assumptions are that, because of the regional spread of the data, one of the largest factor in the species occupancy/distribution is latitude and/or longitude. Additionally, we might consider forest type.
+Occupancy in all versions but one of this model is a latent discrete variable, where we assume the observed species occurrence is related to but not equal to the true site occupancy. Occupancy (Royle and Nichols, 2003), is generally defined as the probability that *at least one* individual is present.
+ - There is a case to be made that becuase we have 10-15 visits, the conditions that satisty occupancy are easily met. I think that is true for most cases, but because we sampled form end of May to early July, we might have arrived too early at some sites.
 
-This model is applied to a multi-visit framework where there are 414 sites and 15 visits per site.
+ *Abundance*
 
-*Add*: interaction between retention amount and time since disturbance
+Abundance is related to how many individuals occupy or use the area around the sampling unit (the ARU), given that the species is present. While we have an observed count of individuals during each visit, the count varies between visits. Conventionally, a multi-visit count is often condensed into a max (maximum ever encountered in one visit, integer), a mean (float), or an intensiy of use (total number of times a unique individual is detected summed for all visits, then divided by survey effort). In this model, I have used the max, but that is easily interchangeable.
+The factors presumably influencing this measure of density is the suitability of the habitat in supporting multiple individuals. This is assumed to be related to the size of the retention patch, the age of the harvest, and the proportion of each forest type in the sampling area (or a related measure of green-up/recovery)
+
+*Measuring detection error*
+
+Detection plays a large role in this model at both steps. The probability of detection for a species of interest at the occupancy level of the model is related to Julian date and time-of-day. In this model, this stage of detection rate will be the Probability of detection (p).
+
+Detection of individuals, at the abundance level of the model, is related to two factors: the bird's movement and singing within its territory, and the distance at which we are sampling the bird when it sings and whether its cue is audible given the meteorological and forested conditions. At this stage the variance caused by heterogeneous detection probability between individuals can be estimated through the method described in Rossman et al., (2016) (see bottom of this page).
+
 
 **First step: Occupancy and detection probability:**
 
@@ -76,7 +90,7 @@ Stan does not support sampling discrete parameters (Stan user guide, Chap. 7). T
 *Marginalisation on the dicrete latent parameters*
 1. Occupancy
 
-I am trying to estimate a discrete variable (occupancy), and Stan fundamentally doesn't sample a distribution from a non-continuous distribution. Their work around is to marginalise on the discrete parameter and sample from a continuous distribution that is derived from the discrete parameter. Marginalising over a discrete parameter indicates summing over the likelihood or the joint distribution for all its possible values. We are targetting the marginalisation of the Bernoulli-distributed latent discrete occupancy parameter $z$, given the data $y$, and the continuous parameter $(\psi)$. The joint distribution of the data an parameters can be written as:
+In estimate a discrete variable (occupancy), the HMC algorithm in Stan fundamentally can't sample from a non-continuous distribution. Stan's work around is to marginalise on the discrete parameter and sample from a continuous distribution that is derived from but independent to the discrete parameter. To marginalise over a discrete parameter, sum over the likelihoods or the joint distribution for all its possible values. We are targetting the marginalisation of the Bernoulli-distributed latent discrete occupancy parameter $z$, given the data $y$, and the continuous parameter $(\psi)$. The joint distribution can be written as:
 
 $$
 p(data|\psi, z) = p(data|\psi, z) * p(\psi) * p(z)
@@ -92,12 +106,15 @@ $$
 
 This will provide Stan a continuous distribution in terms of the data and the parameter $\psi$ from which to sample.
 
-In the model block, Stan implements the marginalisation on a discrete latent variable with the notation target +=. The target keyword represents the logarithm of the joint density (or posterior density, depending on context) being modeled. The += operation increments the value of the target distribution. 
+In the model block, Stan implements the marginalisation on a discrete latent variable with the notation target +=. The target keyword represents the logarithm (because stan operates with log-likelihoods) of the joint density (or posterior density, depending on context) being modeled. The += operation increments the value of the target distribution. 
 
 
 2. Abundance
 
-Stan has a built-in Zero-Inflated Poisson models, described in Chapter 5 of the user manual.
+Stan has a built-in Zero-Inflated Poisson models, described in Chapter 5 of the user manual. A ZIP is commonly used when there are different processes leading the zero's and the positive counts in an abundance (sounds like occupancy and detection error!). Aka, there are multiple mechanisms behind a non-detection:
+- species is present but no cue is given
+- species is present, cue is given but not detected
+- species is not present
 
 The probabilities of observing 0 and non-0 are described by two different distributions. 
 
@@ -118,7 +135,7 @@ $$ p(y_n | \theta, \lambda) =
   \end{cases}
 $$
 
-In this mixture model where $\lambda \in \{0, 1\}$, each component of the mixture will be estimated with effect data sizes of $\theta$ $N$ and (1 - $\theta$) $N$. 
+In this mixture model where $\lambda \in \{0, 1\}$ (*is this right?*), each component of the mixture will be estimated with effect data sizes of $\theta$ $N$ and (1 - $\theta$) $N$. 
 
 We need to decide whether the local observed abundance, M_i, is equal to the latent abundance or needs to be used to estimate the true abundance. The observations we have is the local abundance at visit j. The parameters of interest in the model are not at the visit-level, but at the site level (retention size, habitat, etc). The counts are not equal across visits for the same sites; this indicates we are better off treating those as an imperfect observations of the true local latent population size. How do we relate the visit-level abundance to an estimate latent site-level abundance?
 
@@ -136,5 +153,5 @@ $$
 p_i = 1 ( 1 - \theta_{i, j})^{N_{i, j}}
 $$
 
-where $\theta_{i, j}$ is the per individual detection probability at site i, visit j. 
+where $\theta_{i, j}$ is the per individual detection probability at site i, visit j. In implementing this version, the main difference is that their N_{ij} is estimated, and mine is observed.
 
