@@ -153,5 +153,5 @@ $$
 p_i = 1 ( 1 - \theta_{i, j})^{N_{i, j}}
 $$
 
-where $\theta_{i, j}$ is the per individual detection probability at site i, visit j. In implementing this version, the main difference is that their N_{ij} is estimated, and mine is observed.
+where $\theta_{i, j}$ is the per individual detection probability at site i, visit j. In implementing this version, the main difference is that their $N_{ij}$ is estimated, and mine is observed.
 
