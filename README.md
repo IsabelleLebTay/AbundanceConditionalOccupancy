@@ -1,5 +1,9 @@
 # AbundanceConditionalOccupancy
 
+
+![Alt text](images/goergeous harvest high res.png)
+
+
 This model is for a single species, and will be replicated for 6 different bird species. They are all migratory boreal songbirds and I expect they will react differently to the environmental conditions reflected in the model both due to the species distribution and regional density, their habitat preferences, and their vocal/territorial behaviours.
 
 The data was gathered using ARUs (Autonomous Recording Units) and processed during the first few hours around dawn. All detected individuals of each species of interest is tagged (WTSP, TEWA, REVI, OSFL, YRWA, RCKI).
