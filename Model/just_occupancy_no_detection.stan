@@ -1,14 +1,15 @@
 
 data {
     int<lower=0> I; 
-  int<lower=0, upper=1> y[I];  // Collapsed observed occurrence for each site
+ // int<lower=0, upper=1> y[I];  
+  array[I] int<lower=0, upper=1> y;// Collapsed observed occurrence for each site
   
   // site-level covariates for occupancy
   vector[I] latitude;
   vector[I] longitude;
-  vector[I] percent_conifer;
+ /* vector[I] percent_conifer;
   vector[I] percent_deciduous;
-  vector[I] percent_pine;
+  vector[I] percent_pine; */
 }
 
 parameters {
@@ -21,13 +22,13 @@ parameters {
 }
 
 model {
-  // Priors for occupancy coefficients
-  beta_0 ~ normal(0, 5);
-  beta_latitude ~ normal(0, 5);
-  beta_longitude ~ normal(0, 5);
- /* beta_percent_conifer ~ normal(0, 5);
+ // Priors for occupancy coefficients
+  beta_0 ~ normal(0, 0.5);
+  beta_latitude ~ normal(0, 1);
+  beta_longitude ~ normal(0, 1);
+/*  beta_percent_conifer ~ normal(0, 5);
   beta_percent_deciduous ~ normal(0, 5);
-  beta_percent_pine ~ normal(0, 5); */
+  beta_percent_pine ~ normal(0, 5); 
 
 vector [I] lin_pred_occupancy = beta_0 + 
                               beta_latitude * latitude + 
@@ -47,14 +48,23 @@ y ~ Bernoulli_logit(lin_pred_occupancy);
     
     // Bernoulli likelihood for site i
     y[i] ~ bernoulli(psi_i);
-  }
+  } */
+
+
+  // vectorized
+  y ~ bernoulli_logit(beta_0 + 
+                              beta_latitude * latitude + 
+                              beta_longitude * longitude);
+
 }
 
 generated quantities{
 
-  vector[I] yrep;
+  vector[I] y_rep;
   for (i in 1:I) {
-y_rep[I] = Bernoulli_logit_rng(lin_pred_occupancy[i]) ;
+y_rep[I] = bernoulli_logit_rng(beta_0 + 
+                              beta_latitude* latitude[i] + 
+                              beta_longitude * longitude[i]) ;
   }
 
 
