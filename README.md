@@ -39,7 +39,9 @@ Detection plays a large role in this model at both steps. The probability of det
 Detection of individuals, at the abundance level of the model, is related to two factors: the bird's movement and singing within its territory, and the distance at which we are sampling the bird when it sings and whether its cue is audible given the meteorological and forested conditions. At this stage the variance caused by heterogeneous detection probability between individuals can be estimated through the method described in Rossman et al., (2016) (see bottom of this page).
 
 
-# Part 1: Local abundance is observed *N_i*   $\equiv$ *y_i*
+# Part 1: Local abundance is observed 
+Assumption: $N_i$   $\equiv$ $y_i$
+
 
 I am differentiating versions of this model depending on whether we treat the local abundance as an observed or latent variable.
 
@@ -164,8 +166,10 @@ In this mixture model where $\lambda \in \{0, 1\}$ (*is this right?*), each comp
 We need to decide whether the local observed abundance, M_i, is equal to the latent abundance or needs to be used to estimate the true abundance. The observations we have is the local abundance at visit j. The parameters of interest in the model are not at the visit-level, but at the site level (retention size, habitat, etc). The counts are not equal across visits for the same sites; this indicates we are better off treating those as an imperfect observations of the true local latent population size. How do we relate the visit-level abundance to an estimate latent site-level abundance?
 
 
-# Part 2: Local abundance is estimated *N_i*  not $\\equiv$ *y_i*
+# Part 2: Local abundance is estimated 
+Why could I assume that $N_i$  is not $\equiv$ $y_i$?
 
+![Dispersion of counts per species](figures/dispersion.png)
 
 **Heterogeneous Detection as related to variation in local abundance**
 
@@ -181,7 +185,7 @@ $$
 p_i = 1 ( 1 - r_{i, j})^{N_{i, j}}
 $$
 
-where $r_{i, j}$ is the per individual detection probability at site i, visit j, and $p_i$ is the net probability of detection. This version does not use count data, but rather detection/non-detection and the binomial counts is the number of times an individual was detected at site *i* out of *J* replicates (visits), given the detection probability *p_i* for that site. The Binomial outcome is descirbed as
+where $r_{i, j}$ is the per individual detection probability at site i, visit j, and $p_i$ is the net probability of detection. This version does not use count data, but rather detection/non-detection and the binomial counts is the number of times an individual was detected at site $i$ out of $J$ replicates (visits), given the detection probability $p_i$ for that site. The Binomial outcome is descirbed as
 
 $$
 P(Y_i = y_i) = \binom{J}{y_i} p^{y_i}_i (1 - p_i)^{J - y_i}
