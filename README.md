@@ -77,7 +77,7 @@ $$
 The *detection probability* is defined as the probability of detecting the species given that it is present:
 
 $$
-\text{p} = Pr(\text{y_i} = 1 | \text{z_i} = 1)
+p = \text{Pr}(y_i = 1 | z_i = 1)
 $$
 
 
