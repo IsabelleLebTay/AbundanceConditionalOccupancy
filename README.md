@@ -47,7 +47,7 @@ $$
 z_i \sim \text{Bernoulli}(\psi_i)
 $$
 
-and the estimated parameter $\psi$ is a linear expression:
+and the estimated parameter $\psi$ can vary by site in relation to spatial covariates, as in this linear expression:
 
 $$
 \text{logit}(\psi_i) = \beta_0 + \beta_1 \times \text{latitude}_i + \beta_2 \times \text{longitude}_i + \text{forest types}_i
@@ -72,6 +72,15 @@ where $y_{ij}$ is the **observed** presence/absence for site $i$ at visit $j$, a
 $$
 \text{logit}(p_{ij}) = \beta_0 + \beta_1 \times \text{time of day} + \beta_2 \times \text{Julian date}
 $$
+
+
+The *detection probability* is defined as the probability of detecting the species given that it is present:
+
+$$
+\text{p} = Pr(\text{y_i} = 1 | \text{z_i} = 1)
+$$
+
+
 
 **Second step: Abundance, as it relates to Occupancy:**
 
