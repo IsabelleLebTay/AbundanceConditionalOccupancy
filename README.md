@@ -164,7 +164,7 @@ We need to decide whether the local observed abundance, M_i, is equal to the lat
 Detection probability, $p$,  related to the ocucpancy of a site as $y_{ij}$ ~ Bernoulli($p$), is heterogeneous between visits at the same site. Royle and Nichols (2003) note that heterogeneity in p can be induced by variation in abundance between visits. Let $N_i$ be the abundance at site $i$. The net probability of detection of at least one individual at site $i$ is
 
 $$
-p_i = 1 ( 1 - \theta)^{N_i}
+p_i = 1 ( 1 - r)^{N_i}
 $$
 
 Rossman et al. (2016), rewrite this detection probability as 
