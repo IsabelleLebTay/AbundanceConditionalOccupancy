@@ -73,7 +73,7 @@ $$
 \text{logit}(p_{ij}) = \beta_0 + \beta_1 \times \text{time of day} + \beta_2 \times \text{Julian date}
 $$
 
-**Second step: Occupancy and detection probability:**
+**Second step: Abundance, as it relates to Occupancy:**
 
 The bird count observations $N_{ij}$, is at the visit-level. For now, it will be summarized as a mean count at the site-level, as $M_i$. The local observed abundance, an observed quantity $N_i$, is conditional on occupancy and is used to estimate the unobserved Poisson rate $\lambda_i$:
 
@@ -130,7 +130,7 @@ $$ y_n ~
   \end{cases}
 $$
 
-
+Where $\theta$ is the probability of occupancy
 Because Stan does not support sampling conditional on some parameter (with ~), we consider the corresponding likelihoods:
 
 $$ p(y_n | \theta, \lambda) =
