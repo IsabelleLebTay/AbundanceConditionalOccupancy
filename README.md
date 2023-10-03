@@ -39,6 +39,12 @@ Detection plays a large role in this model at both steps. The probability of det
 Detection of individuals, at the abundance level of the model, is related to two factors: the bird's movement and singing within its territory, and the distance at which we are sampling the bird when it sings and whether its cue is audible given the meteorological and forested conditions. At this stage the variance caused by heterogeneous detection probability between individuals can be estimated through the method described in Rossman et al., (2016) (see bottom of this page).
 
 
+<font size = "16">
+Part 1: Local abundance is observed *N_i  \equiv y_i*
+</font>
+
+I am differentiating versions of this model depending on whether we treat the local abundance as an observed or latent variable.
+
 **First step: Occupancy and detection probability:**
 
 $z_i$ is the true estimated occupancy state.
@@ -161,7 +167,7 @@ We need to decide whether the local observed abundance, M_i, is equal to the lat
 
 **Detection**
 
-Detection probability, $p$,  related to the ocucpancy of a site as $y_{ij}$ ~ Bernoulli($p$), is heterogeneous between visits at the same site. Royle and Nichols (2003) note that heterogeneity in p can be induced by variation in abundance between visits. Let $N_i$ be the abundance at site $i$. The net probability of detection of at least one individual at site $i$ is
+Detection probability, $p$,  related to the ocucpancy of a site as $y_{ij}$ ~ Bernoulli($p$), is heterogeneous between visits at the same site. Royle and Nichols (2003) note that heterogeneity in p can be induced by variation in abundance between visits. Let $N_i$ be the latent unobserved abundance at site $i$. The net probability of detection of at least one individual at site $i$ is
 
 $$
 p_i = 1 ( 1 - r)^{N_i}
@@ -173,5 +179,5 @@ $$
 p_i = 1 ( 1 - r_{i, j})^{N_{i, j}}
 $$
 
-where $r{i, j}$ is the per individual detection probability at site i, visit j, and $p_i$ is the net probability of detection. In implementing this version, the main difference is that their $N_{ij}$ is estimated, and mine is observed.
+where $r_{i, j}$ is the per individual detection probability at site i, visit j, and $p_i$ is the net probability of detection. In implementing this version, the main difference is that their $N_{ij}$ is estimated, and mine is observed.
 
