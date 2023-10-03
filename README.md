@@ -164,7 +164,9 @@ In this mixture model where $\lambda \in \{0, 1\}$ (*is this right?*), each comp
 We need to decide whether the local observed abundance, M_i, is equal to the latent abundance or needs to be used to estimate the true abundance. The observations we have is the local abundance at visit j. The parameters of interest in the model are not at the visit-level, but at the site level (retention size, habitat, etc). The counts are not equal across visits for the same sites; this indicates we are better off treating those as an imperfect observations of the true local latent population size. How do we relate the visit-level abundance to an estimate latent site-level abundance?
 
 
-<font size = "16"> Part 2: Local abundance is observed *N_i  not $\equiv$ y_i* </font>
+<font size = "1"> Part 2: Local abundance is observed *N_i*  not $\equiv$ *y_i* </font>
+
+
 **Heterogeneous Detection as related to variation in local abundance**
 
 Detection probability, $p$,  related to the occupancy of a site as $y_{ij}$ ~ Bernoulli($p$), is heterogeneous between visits at the same site. Royle and Nichols (2003) note that heterogeneity in p can be induced by variation in abundance between visits. Let $N_i$ be the latent unobserved abundance at site $i$. The net probability of detection of at least one individual at site $i$ is
