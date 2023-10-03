@@ -47,6 +47,12 @@ $$
 z_i \sim \text{Bernoulli}(\psi_i)
 $$
 
+where $\psi$ is the *occurrence probability*, the probability that the site is occupied, such that 
+
+$$
+\psi = \text{Pr}(z_i = 1)
+$$
+
 and the estimated parameter $\psi$ can vary by site in relation to spatial covariates, as in this linear expression:
 
 $$
@@ -155,7 +161,7 @@ We need to decide whether the local observed abundance, M_i, is equal to the lat
 
 **Detection**
 
-Detection probability, $p$,  related to the ocucpancy of a site as $y_{ij}$ ~ Bernoulli($p$), is heterogeneous between visits at the same site. Royle and Nichols (2003) note that heterogeneity in p can be induced by variation in abundance between visits. Let $N_i$ be the abundance at site $i$. The net probability of detection of at least one individual at site $i% is
+Detection probability, $p$,  related to the ocucpancy of a site as $y_{ij}$ ~ Bernoulli($p$), is heterogeneous between visits at the same site. Royle and Nichols (2003) note that heterogeneity in p can be induced by variation in abundance between visits. Let $N_i$ be the abundance at site $i$. The net probability of detection of at least one individual at site $i$ is
 
 $$
 p_i = 1 ( 1 - \theta)^{N_i}
@@ -164,8 +170,8 @@ $$
 Rossman et al. (2016), rewrite this detection probability as 
 
 $$
-p_i = 1 ( 1 - \theta_{i, j})^{N_{i, j}}
+p_i = 1 ( 1 - r_{i, j})^{N_{i, j}}
 $$
 
-where $\theta_{i, j}$ is the per individual detection probability at site i, visit j. In implementing this version, the main difference is that their $N_{ij}$ is estimated, and mine is observed.
+where $r{i, j}$ is the per individual detection probability at site i, visit j, and $p_i$ is the net probability of detection. In implementing this version, the main difference is that their $N_{ij}$ is estimated, and mine is observed.
 
