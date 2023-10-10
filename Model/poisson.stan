@@ -28,8 +28,10 @@ model{
 
 generated quantities {
   int M_pred[I];  // predicted counts
+  real log_lik[I]; // log-likelihood for each predicted count
   for (i in 1:I) {
     // Generate predicted count for each observation
     M_pred[i] = poisson_log_rng(alpha + beta_age * age[i] );
+    log_lik[i] = poisson_log_lpmf(M[i] | alpha + beta_age * age[i]);
   }
 }
