@@ -3,6 +3,7 @@ data {
     array[I] int<lower=0> M; // this format is newer, int M[I] will be deprecated
     vector[I] age;
     vector[I] size;
+
 }
 
 parameters {
@@ -27,7 +28,11 @@ model {
 
     // linear equation for the abundance parameter. Exp because lambda can only be positive
     // vector[I] lambda = exp(alpha + beta_age * age + beta_size * size + beta_age_size * age * size );
-    vector[I] lambda = exp(alpha + beta_age * age + beta_size * size );
+    // vector[I] lambda = exp(alpha + beta_age * age + beta_size * size);
+    
+    // I haven'ty figured out how to have an interaction term when the linear
+    // expression is vectorized this way. It raises on error about matrix operations.
+    // Might have to subscript the matrix.
 
   // for (i in 1:I) {
         // Calculate lambda using the size covariate
@@ -38,6 +43,11 @@ model {
         // think about what theta means, and where prensece/absence = theta  or 1-theta.
         // here, swith to the logit scale
     for (i in 1:I) {    
+        real lambda = exp(alpha 
+                            + beta_age * age[i] 
+                            + beta_size * size[i] 
+                            + beta_age_size * age[i] * size[i] );
+
         if (M[i] == 0) {
             target += log_sum_exp(log(theta), // log_sum_exp(arg1, arg2) is the same as  log(exp(arg1) + exp(arg2))
                 log1m(theta) // this computes log(1-theta)
@@ -61,16 +71,22 @@ generated quantities {
     for (i in 1:I) {
 
             // Compute lambda for current age and size
-        lambda_rep[i] = exp(alpha + beta_age * age[i]  + beta_size * size[i]);
+        lambda_rep[i] = exp(alpha 
+                            + beta_age * age[i] 
+                             + beta_size * size[i]
+                             + beta_age_size * age[i] * size[i]);
         // Sample from zero-inflated component with probability theta and from Poisson component with probability 1-theta
         if (bernoulli_rng(theta)) {
             M_pred[i] = 0;
-            log_lik[i] = log_sum_exp(log(theta), log1m(theta) + poisson_lpmf(0 | lambda_rep[i]));
-
-            
-        } else {
+            log_lik[i] = log_sum_exp(log(theta), 
+                                        log1m(theta) 
+                                        + poisson_lpmf(0 | lambda_rep[i]));        
+        } 
+        
+        else {
             M_pred[i] = poisson_rng(lambda_rep[i]);
-            log_lik[i] = log1m(theta) + poisson_lpmf(M_pred[i] | lambda_rep[i]);
+            log_lik[i] = log1m(theta)
+                                + poisson_lpmf(M_pred[i] | lambda_rep[i]);
 
         }
         
