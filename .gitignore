@@ -6,3 +6,5 @@ Model/abundance_cond_uccpuancy_TEST.hpp
 
 Model/*.hpp
 Model/*.exe
+
+Model/Inference Data/

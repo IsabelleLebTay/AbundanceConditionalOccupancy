@@ -3,15 +3,17 @@ data {
     array[I] int<lower=0> M; // this format is newer, int M[I] will be deprecated
     vector[I] age;
     vector[I] size;
-
+    vector[I] age2;
     vector[I] latitude;
     vector[I] longitude;
+
 
 }
 
 parameters {
     real alpha; // Intercept
     real beta_age; // Coefficient for the age
+    real beta_age2;
     real beta_size;
     real beta_age_size; // Coefficient for the interaction between age and size
 
@@ -25,6 +27,7 @@ model {
     //priors: fix the distributions! THink about the scale of each prior
     alpha ~ normal(0,1);
     beta_age ~ normal(0,1);
+    beta_age2 ~ normal(0,1);
     beta_size ~ normal(0,1);
     beta_age_size ~ normal(0,1); // Priors for interaction term
 
@@ -43,6 +46,7 @@ model {
     for (i in 1:I) {    
         real lambda = exp(alpha 
                             + beta_age * age[i] 
+                            + beta_age2 * age2[i]
                             + beta_size * size[i] 
                             + beta_age_size * age[i] * size[i] );
 
@@ -75,6 +79,7 @@ generated quantities {
             // Compute lambda for current age and size
         lambda_rep[i] = exp(alpha 
                             + beta_age * age[i] 
+                            + beta_age2 * age2[i]
                              + beta_size * size[i]
                              + beta_age_size * age[i] * size[i]);
         // Sample from zero-inflated component with probability theta and from Poisson component with probability 1-theta
