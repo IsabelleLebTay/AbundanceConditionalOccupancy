@@ -72,7 +72,7 @@ model {
 }
 
 generated quantities {
-    int M_pred[I]; // change this to M_pred
+    int M_pred[I];
     real log_lik[I]; // log-likelihood for each predicted count
     vector[I] lambda_rep; // to store expected rate parameter
     vector[I] theta_rep;
