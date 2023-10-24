@@ -3,9 +3,10 @@ data {
     array[I] int<lower=0> M; // this format is newer, int M[I] will be deprecated
     vector[I] age;
     vector[I] size;
-    vector[I] age2;
     vector[I] latitude;
     vector[I] longitude;
+    vector[I] percent_conifer;
+    vector[I] percent_pine;
 
 
 }
@@ -13,13 +14,15 @@ data {
 parameters {
     real alpha; // Intercept
     real beta_age; // Coefficient for the age
-    real beta_age2;
     real beta_size;
     real beta_age_size; // Coefficient for the interaction between age and size
 
     real alpha_theta;
     real beta_latitude;
     real beta_longitude;
+
+    real beta_conifer;
+    real beta_pine;
 }
 
 model {
@@ -27,13 +30,16 @@ model {
     //priors: fix the distributions! THink about the scale of each prior
     alpha ~ normal(0,1);
     beta_age ~ normal(0,1);
-    beta_age2 ~ normal(0,1);
     beta_size ~ normal(0,1);
     beta_age_size ~ normal(0,1); // Priors for interaction term
 
     alpha_theta ~ normal(0,1);
     beta_latitude ~ normal(0, 1);
     beta_longitude ~ normal(0, 1);
+
+    beta_conifer ~ normal(0, 1);
+    beta_pine ~ normal(0, 1);
+
 
     // theta was a parameter:     real<lower=0, upper=1> theta; // probability of occupancy
 
@@ -46,9 +52,10 @@ model {
     for (i in 1:I) {    
         real lambda = exp(alpha 
                             + beta_age * age[i] 
-                            + beta_age2 * age2[i]
                             + beta_size * size[i] 
-                            + beta_age_size * age[i] * size[i] );
+                            + beta_age_size * age[i] * size[i] 
+                            + beta_conifer * percent_conifer[i]
+                            + beta_pine * percent_pine[i]);
 
         if (M[i] == 0) {
             target += log_sum_exp(log(theta[i]), // log_sum_exp(arg1, arg2) is the same as  log(exp(arg1) + exp(arg2))
@@ -79,9 +86,10 @@ generated quantities {
             // Compute lambda for current age and size
         lambda_rep[i] = exp(alpha 
                             + beta_age * age[i] 
-                            + beta_age2 * age2[i]
-                             + beta_size * size[i]
-                             + beta_age_size * age[i] * size[i]);
+                            + beta_size * size[i]
+                            + beta_age_size * age[i] * size[i]
+                            + beta_conifer * percent_conifer[i]
+                            + beta_pine * percent_pine[i]);
         // Sample from zero-inflated component with probability theta and from Poisson component with probability 1-theta
         if (bernoulli_rng(theta_rep[i])) {
             M_pred[i] = 0;

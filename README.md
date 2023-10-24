@@ -185,7 +185,7 @@ $$
 p_i = 1 ( 1 - r_{i, j})^{N_{i, j}}
 $$
 
-where $r_{i, j}$ is the per individual detection probability at site i, visit j, and $p_i$ is the net probability of detection. This version does not use count data, but rather detection/non-detection and the binomial counts is the number of times an individual was detected at site $i$ out of $J$ replicates (visits), given the detection probability $p_i$ for that site. The Binomial outcome is descirbed as
+where $r_{i, j}$ is the per individual detection probability at site i, visit j, and $p_i$ is the net probability of detection. This version does not use count data, but rather detection/non-detection and the binomial counts is the number of times an individual was detected at site $i$ out of $J$ replicates (visits), given the detection probability $p_i$ for that site. The Binomial outcome is described as
 
 $$
 P(Y_i = y_i) = \binom{J}{y_i} p^{y_i}_i (1 - p_i)^{J - y_i}
