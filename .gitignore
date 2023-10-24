@@ -8,3 +8,6 @@ Model/*.hpp
 Model/*.exe
 
 Model/Inference Data/
+Model/Outputs/CSV/
+
+Model/Outputs/Posteriors/
