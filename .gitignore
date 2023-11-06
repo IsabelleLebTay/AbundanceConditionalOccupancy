@@ -13,3 +13,8 @@ Model/Outputs/CSV/
 Model/Outputs/Posteriors/
 Model/Inference Data/
 Model/*.json
+
+Model/*.rmd
+Model/poisson.rmd
+Model/poisson.R
+Model/*html

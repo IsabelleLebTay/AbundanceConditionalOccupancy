@@ -14,10 +14,12 @@ parameters {
     real beta_0; // Intercept
     real beta_age; // Coefficient for the age
     real beta_size;
-    real beta_age_size; // Coefficient for the interaction between age and size
+//    real beta_age_size; // Coefficient for the interaction between age and size
     real beta_conifer;
     real beta_pine;
     real beta_deciduous;
+    real beta_theta;
+
     real alpha_0;
     real alpha_neighbour;
    // real<lower=0, upper=1> theta; // probability of occupancy
@@ -29,10 +31,11 @@ model {
     beta_0 ~ normal(0,1);
     beta_age ~ normal(0,1);
     beta_size ~ normal(0,1);
-    beta_age_size ~ normal(0,1); // Priors for interaction term
+//    beta_age_size ~ normal(0,1); // Priors for interaction term
     beta_conifer ~ normal(0, 1);
     beta_pine ~ normal(0, 1);
     beta_deciduous ~ normal(0,1);
+    beta_theta ~ normal(0,1);
 
     alpha_0 ~ normal(0,1);
     alpha_neighbour ~ normal(0,1);
@@ -55,10 +58,10 @@ model {
     real lambda = exp(beta_0
                         + beta_age * age[i]
                         + beta_size * size[i]
-                        + beta_age_size * age[i] * size[i] 
                         + beta_conifer * percent_conifer[i]
                         + beta_pine * percent_pine[i]
-                        + beta_deciduous * percent_deciduous[i]);
+                        + beta_deciduous * percent_deciduous[i]
+                        + beta_theta * logit(theta[i]));
 
         if (M[i] == 0) {
             target += log_sum_exp(log(theta[i]), 
@@ -88,10 +91,10 @@ generated quantities {
         lambda_rep[i] = exp(beta_0 
                             + beta_age * age[i] 
                             + beta_size * size[i]
-                            + beta_age_size * age[i] * size[i]
                             + beta_conifer * percent_conifer[i]
                             + beta_pine * percent_pine[i]
-                            + beta_deciduous * percent_deciduous[i]);
+                            + beta_deciduous * percent_deciduous[i]
+                            + beta_theta * logit(theta_rep[i]));
                             
         // Sample from zero-inflated component with probability theta and from Poisson component with probability 1-theta
         if (bernoulli_rng(theta_rep[i])) {

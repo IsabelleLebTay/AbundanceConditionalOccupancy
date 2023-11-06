@@ -1,0 +1,190 @@
+---
+title: "Poisson or Zero-Inflated?"
+format:
+    html:
+        code-fold: true
+
+---
+
+
+To insert new code cell: Ctrl+Shift+I
+Execute the current cell with Ctrl+Shift+Enter, the current line(s) with Ctrl+Enter, or previous cells with Ctrl+Alt+P (note that on the Mac you should use Cmd rather than Ctrl as the prefix for all Quarto keyboard shortcuts).
+
+Load packages and set paths.
+```{r}
+library(glmmTMB)
+library(DHARMa)
+library(ggplot2)
+library(bbmle) 
+covariates_path <- "C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/covariates"
+obs_path <- "C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/All Processed Final Location"
+
+```
+
+Load data
+```{r}
+full_covariates <- read.csv(file.path(covariates_path, 'merged_covariates.csv'))
+max_count <- read.csv(file.path(obs_path, 'max_count_all_spp.csv'))
+
+```
+
+Prepare data for modeling
+```{r}
+full_covariates$Veg_cat <- factor(full_covariates$Veg_cat)
+# Add 'nb' to neighbourhood effect 
+bird_columns <- c('TEWA', 'RCKI', 'WTSP', 'YRWA', 'REVI', 'OSFL')
+new_names <- paste0("nb_", bird_columns)
+colnames(full_covariates)[colnames(full_covariates) %in% bird_columns] <- new_names
+
+obs_covs_df <- cbind(max_count, full_covariates)
+# head(obs_covs_df)
+# write.csv(obs_covs_df, file = file.path(obs_path, "max_count_all_covs.csv"))
+# Define the predictors to scale
+predictors_to_scale <- c('RETN_m2', 'Year_since_logging', 'latitude', 'longitude')
+
+# Apply MinMax scaling to each predictor
+obs_covs_df[, predictors_to_scale] <- lapply(obs_covs_df[, predictors_to_scale], function(x) {
+  (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+})
+
+# summary(obs_covs_df)
+obs_covs_df <- obs_covs_df[, !duplicated(colnames(obs_covs_df))]
+
+```
+
+# Modelling
+For each bird, compare the Poisson, ZIP, and ZINB models
+
+## TEWA
+```{r}
+
+PoissonPercent <- glmmTMB(TEWA ~ Veg_cat +
+                             RETN_m2 + Year_since_logging
+                             + (1|location),
+                    data = obs_covs_df,
+                    family=poisson)
+PoissonCat<- glmmTMB(TEWA ~ Veg_cat +
+                            RETN_m2 + Year_since_logging 
+                            + (1|location),
+                    data = obs_covs_df,
+                    family=poisson)
+AICtab(PoissonPercent,PoissonCat)
+
+```
+```{r}
+plot(simulateResiduals(PoissonCat))
+```
+
+# OSFL
+
+```{r}
+Poisson3OSFL <- glmmTMB(OSFL ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + (1|location),
+                    data = obs_covs_df,
+                    family=poisson)
+summary(Poisson3OSFL)
+plot(simulateResiduals(Poisson3OSFL))  
+```
+
+# YRWA
+
+
+```{r}
+Poisson3OSFL <- glmmTMB(OSFL ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + (1|location),
+                    data = obs_covs_df,
+                    family=poisson)
+summary(Poisson3OSFL)
+plot(simulateResiduals(Poisson3OSFL))  
+```
+
+# REVI
+
+```{r}
+Poisson3REVI <- glmmTMB(REVI ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + (1|location),
+                    data = obs_covs_df,
+                    family=poisson
+                    )
+summary(Poisson3REVI)
+plot(simulateResiduals(Poisson3REVI))  
+
+
+```
+
+```{r}
+Poisson3REVI <- glmmTMB(REVI ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + (1|location),
+                    data = obs_covs_df,
+                    family=nbinom1
+                    )
+
+summary(Poisson3REVI)
+plot(simulateResiduals(Poisson3REVI))
+
+hist(obs_covs_df$REVI)
+
+mean(obs_covs_df$REVI)
+testDispersion(simulateResiduals(Poisson3REVI))
+testZeroInflation(simulateResiduals(Poisson3REVI))
+```
+
+Explore the residual dispersions. Is it a better firt when spaital correlation is included?
+
+```{r}
+class(getResiduals(Poisson3REVI)) 
+getResiduals(Poisson3REVI)
+autoXY <- glmmTMB(getResiduals(Poisson3REVI) ~ s(latitude + longitude),
+                  data = obs_covs_df,
+                  family = gaussian)
+
+```
+
+# WTSP
+
+
+```{r}
+Poisson3WTSP <- glmmTMB(WTSP ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + (1|location),
+                    data = obs_covs_df,
+                    family=poisson
+                    )
+summary(Poisson3WTSP)
+plot(simulateResiduals(Poisson3WTSP))
+```
+
+```{r}
+negbinom <- glmmTMB(WTSP ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + (1|location),
+                    data = obs_covs_df,
+                    family=nbinom1
+                    )
+# summary(negbinom)
+plot(simulateResiduals(negbinom))
+
+testDispersion(simulateResiduals(negbinom))
+testZeroInflation(simulateResiduals(negbinom))
+
+```
+
+# RCKI
+
+
+```{r}
+Poisson3RCKI <- glmmTMB(RCKI ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + (1|location),
+                    data = obs_covs_df,
+                    family=poisson
+                    )
+
+summary(Poisson3RCKI)
+plot(simulateResiduals(Poisson3RCKI))
+
+```
