@@ -1,22 +1,17 @@
-Model/Data/
-Model/Outputs/sampler csvs/
-Model/current math behind the model.md 
-Model/abundance_cond_uccpuancy_TEST.exe
-Model/abundance_cond_uccpuancy_TEST.hpp
+Processed Data/
+Output/
 
-Model/*.hpp
-Model/*.exe
+Models/current math behind the model.md 
+Models/log.md 
 
-Model/Inference Data/
-Model/Outputs/CSV/
 
-Model/Outputs/Posteriors/
-Model/Inference Data/
-Model/*.json
+Models/Stan/*.hpp
+Models/Stan/*.exe
 
-Model/*.rmd
-Model/poisson.rmd
-Model/poisson.R
+Models/Inference Data/
 
-Model/poisson_vs_ZI_files/
-Model/poisson_vs_ZI_files/figure-html/*.png
+Models/json/
+
+Models/R/inference.R
+Models/R/poisson.R
+Models/R/poisson.rmd
