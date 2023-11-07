@@ -3,6 +3,7 @@
 
 ![Satellite image of harvest](images/harvest_image_satellite.png)
 
+[View the Poisson vs ZI HTML](https://isabellelebtay.github.io/AbundanceConditionalOccupancy/Model/poisson_vs_ZI.html)
 
 
 This model is for a single species, and will be replicated for 6 different bird species. They are all migratory boreal songbirds and I expect they will react differently to the environmental conditions reflected in the model both due to the species distribution and regional density, their habitat preferences, and their vocal/territorial behaviours.

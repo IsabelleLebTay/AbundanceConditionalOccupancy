@@ -17,4 +17,6 @@ Model/*.json
 Model/*.rmd
 Model/poisson.rmd
 Model/poisson.R
-Model/*html
+
+Model/poisson_vs_ZI_files/
+Model/poisson_vs_ZI_files/figure-html/*.png
