@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Poisson, Zero-Inflation, and Spatial Autocorrelation?</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="poisson_vs_ZI_files/libs/clipboard/clipboard.min.js"></script>
+<script src="poisson_vs_ZI_files/libs/quarto-html/quarto.js"></script>
+<script src="poisson_vs_ZI_files/libs/quarto-html/popper.min.js"></script>
+<script src="poisson_vs_ZI_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="poisson_vs_ZI_files/libs/quarto-html/anchor.min.js"></script>
+<link href="poisson_vs_ZI_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="poisson_vs_ZI_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="poisson_vs_ZI_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="poisson_vs_ZI_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="poisson_vs_ZI_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#purpose" id="toc-purpose" class="nav-link active" data-scroll-target="#purpose">Purpose</a></li>
+  <li><a href="#preparing-for-the-models" id="toc-preparing-for-the-models" class="nav-link" data-scroll-target="#preparing-for-the-models">Preparing for the models</a></li>
+  <li><a href="#modelling" id="toc-modelling" class="nav-link" data-scroll-target="#modelling">Modelling</a>
+  <ul class="collapse">
+  <li><a href="#tewa" id="toc-tewa" class="nav-link" data-scroll-target="#tewa">TEWA</a>
+  <ul class="collapse">
+  <li><a href="#check-for-spatial-correlation" id="toc-check-for-spatial-correlation" class="nav-link" data-scroll-target="#check-for-spatial-correlation">Check for spatial correlation</a></li>
+  <li><a href="#check-if-the-spatial-model-is-a-diffenret-and-a-better-fit-than-the-regular-model" id="toc-check-if-the-spatial-model-is-a-diffenret-and-a-better-fit-than-the-regular-model" class="nav-link" data-scroll-target="#check-if-the-spatial-model-is-a-diffenret-and-a-better-fit-than-the-regular-model">Check if the spatial model is a diffenret and a better fit than the regular model</a></li>
+  </ul></li>
+  <li><a href="#osfl" id="toc-osfl" class="nav-link" data-scroll-target="#osfl">OSFL</a>
+  <ul class="collapse">
+  <li><a href="#check-for-spatial-correlation-1" id="toc-check-for-spatial-correlation-1" class="nav-link" data-scroll-target="#check-for-spatial-correlation-1">Check for spatial correlation</a></li>
+  <li><a href="#check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model" id="toc-check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model" class="nav-link" data-scroll-target="#check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model">Check if the spatial model is a different and a better fit than the regular model</a></li>
+  </ul></li>
+  <li><a href="#yrwa" id="toc-yrwa" class="nav-link" data-scroll-target="#yrwa">YRWA</a>
+  <ul class="collapse">
+  <li><a href="#check-for-spatial-correlation-2" id="toc-check-for-spatial-correlation-2" class="nav-link" data-scroll-target="#check-for-spatial-correlation-2">Check for spatial correlation</a></li>
+  <li><a href="#check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-1" id="toc-check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-1" class="nav-link" data-scroll-target="#check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-1">Check if the spatial model is a different and a better fit than the regular model</a></li>
+  </ul></li>
+  <li><a href="#revi" id="toc-revi" class="nav-link" data-scroll-target="#revi">REVI</a>
+  <ul class="collapse">
+  <li><a href="#check-for-spatial-correlation-3" id="toc-check-for-spatial-correlation-3" class="nav-link" data-scroll-target="#check-for-spatial-correlation-3">Check for spatial correlation</a></li>
+  <li><a href="#check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-2" id="toc-check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-2" class="nav-link" data-scroll-target="#check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-2">Check if the spatial model is a different and a better fit than the regular model</a></li>
+  </ul></li>
+  <li><a href="#wtsp" id="toc-wtsp" class="nav-link" data-scroll-target="#wtsp">WTSP</a>
+  <ul class="collapse">
+  <li><a href="#check-for-spatial-correlation-4" id="toc-check-for-spatial-correlation-4" class="nav-link" data-scroll-target="#check-for-spatial-correlation-4">Check for spatial correlation</a></li>
+  <li><a href="#check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-3" id="toc-check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-3" class="nav-link" data-scroll-target="#check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-3">Check if the spatial model is a different and a better fit than the regular model</a></li>
+  </ul></li>
+  <li><a href="#rcki" id="toc-rcki" class="nav-link" data-scroll-target="#rcki">RCKI</a>
+  <ul class="collapse">
+  <li><a href="#check-for-spatial-correlation-5" id="toc-check-for-spatial-correlation-5" class="nav-link" data-scroll-target="#check-for-spatial-correlation-5">Check for spatial correlation</a></li>
+  <li><a href="#check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-4" id="toc-check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-4" class="nav-link" data-scroll-target="#check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-4">Check if the spatial model is a different and a better fit than the regular model</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Poisson, Zero-Inflation, and Spatial Autocorrelation?</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="purpose" class="level1">
+<h1>Purpose</h1>
+<p>On this page, I will be testing overdispersion, checking residuals, and spatial autocorrelation for each of the 6 species. Previously, I checked whether adding a random effect for ‘location’ was useful, and that was axed for all the birds.</p>
+<p>The flow is as such:</p>
+<ol type="1">
+<li>Fit a Poisson model. We’ll call it the ‘null’ model</li>
+<li>Plot the residuals of the null model</li>
+<li>Extract the residuals of the null model, and fit a gam to the residuals to see whether latitude and longitude can explain some variance</li>
+<li>Create an autocorrelation vector from the fitted gam</li>
+<li>Add the autocorrelation vector to the null model</li>
+<li>Plot the autocorrelation for the residuals of both null and spatial models</li>
+<li>Compare summaries for both models</li>
+<li>Check with a Chi Square whether the log-likelihoods of the two models are different</li>
+</ol>
+<p>The decision to include or not the spatial autocorrelation vector depends on whether it explains variation in the spatial gam, whether it improves the spatial correlation of the residuals of the Poisson model, whether the estimates form the Poisson glm are unnecessarily altered, and whether one of the two models has a stronger log-likelihood.</p>
+<p>The decision of including a spatial term should be considered in context to how this model will be used. Including the spatial term reduces generalisability, but it is required for some species. It will make predictions more difficult. But if the model is only used as a fitted empirical model, then the tradeoff is acceptable.</p>
+</section>
+<section id="preparing-for-the-models" class="level1">
+<h1>Preparing for the models</h1>
+<p>Load packages and set paths.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmmTMB)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bbmle) </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ncf)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>covariates_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/covariates"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>obs_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/All Processed Final Location"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Load data</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>full_covariates <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">file.path</span>(covariates_path, <span class="st">'merged_covariates.csv'</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>max_count <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">file.path</span>(obs_path, <span class="st">'max_count_all_spp.csv'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Prepare data for modeling</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>full_covariates<span class="sc">$</span>Veg_cat <span class="ot">&lt;-</span> <span class="fu">factor</span>(full_covariates<span class="sc">$</span>Veg_cat)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Add 'nb' to neighbourhood effect </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>bird_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'TEWA'</span>, <span class="st">'RCKI'</span>, <span class="st">'WTSP'</span>, <span class="st">'YRWA'</span>, <span class="st">'REVI'</span>, <span class="st">'OSFL'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>new_names <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"nb_"</span>, bird_columns)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(full_covariates)[<span class="fu">colnames</span>(full_covariates) <span class="sc">%in%</span> bird_columns] <span class="ot">&lt;-</span> new_names</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>obs_covs_df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(max_count, full_covariates)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(obs_covs_df)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># write.csv(obs_covs_df, file = file.path(obs_path, "max_count_all_covs.csv"))</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the predictors to scale</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>predictors_to_scale <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'RETN_m2'</span>, <span class="st">'Year_since_logging'</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply MinMax scaling to each predictor</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>obs_covs_df[, predictors_to_scale] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(obs_covs_df[, predictors_to_scale], <span class="cf">function</span>(x) {</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  (x <span class="sc">-</span> <span class="fu">min</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">/</span> (<span class="fu">max</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">-</span> <span class="fu">min</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># summary(obs_covs_df)</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>obs_covs_df <span class="ot">&lt;-</span> obs_covs_df[, <span class="sc">!</span><span class="fu">duplicated</span>(<span class="fu">colnames</span>(obs_covs_df))]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="modelling" class="level1">
+<h1>Modelling</h1>
+<section id="tewa" class="level2">
+<h2 class="anchored" data-anchor-id="tewa">TEWA</h2>
+<p>There is some spatial correlation in the null model. Including a Random effect (1|location) does not alleviate it or add much precision to the model.</p>
+<p>Let’s test it with the xy coefficient.</p>
+<p>Conclusion: get rid of RE, add autoXY.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>PoissonPercentTEWA <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(TEWA <span class="sc">~</span> percent_decid <span class="sc">+</span> percent_pine <span class="sc">+</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                            percent_spruce <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                             RETN_m2 <span class="sc">+</span> Year_since_logging,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> obs_covs_df,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family=</span>poisson)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># rexyPoissonTEWA &lt;- glmmTMB(TEWA ~ percent_decid + percent_pine + </span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#                             percent_spruce +</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#                              RETN_m2 + Year_since_logging + autoXY,</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                     data = obs_covs_df,</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#                     family=poisson)</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># ```</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(PoissonPercentTEWA))  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The residuals are slightly overdispersed, but there is a lot of data. Including a inflation terms introduces other issues in fit, so we will keep is as Poisson,</p>
+<section id="check-for-spatial-correlation" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-spatial-correlation">Check for spatial correlation</h3>
+<p>R-sq.(adj) = 0.309 , lots of spatial correlation, which explains 30% of the variance in the residuals</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>resTEWA <span class="ot">&lt;-</span> <span class="fu">residuals</span>(PoissonPercentTEWA)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>TEWAgam <span class="ot">&lt;-</span> <span class="fu">gam</span>(resTEWA <span class="sc">~</span> <span class="fu">s</span>(longitude, latitude), <span class="at">data =</span> obs_covs_df, <span class="at">family =</span> gaussian)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(TEWAgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(TEWAgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: gaussian 
+Link function: identity 
+
+Formula:
+resTEWA ~ s(longitude, latitude)
+
+Parametric coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) 2.057e-08  4.209e-02       0        1
+
+Approximate significance of smooth terms:
+                        edf Ref.df     F p-value    
+s(longitude,latitude) 25.88  28.35 6.477  &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+R-sq.(adj) =  0.309   Deviance explained = 35.5%
+GCV = 0.7456  Scale est. = 0.69447   n = 392</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>autoXY <span class="ot">&lt;-</span> <span class="fu">fitted</span>(TEWAgam) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>There looks to be some spatial autocorrelation. This GAM checks whether a smoothing function of latitude and longitude can explain the variation in the residuals from the Poisson GLM. The R^2 = 0.3, and with p &lt; 0.001.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corr, <span class="at">main=</span><span class="st">'TEWA null model'</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corrxy, <span class="at">main=</span><span class="st">'TEWA spatial model'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(xyPoissonTEWA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+TEWA ~ percent_decid + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging + autoXY
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   831.4    859.2   -408.7    817.4      385 
+
+
+Conditional model:
+                    Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)         0.039984   0.176565   0.226    0.821    
+percent_decid       0.148520   0.175766   0.845    0.398    
+percent_pine       -0.303107   0.189906  -1.596    0.110    
+percent_spruce     -0.789201   0.182310  -4.329  1.5e-05 ***
+RETN_m2            -0.001889   0.457307  -0.004    0.997    
+Year_since_logging -0.136642   0.204528  -0.668    0.504    
+autoXY              0.855975   0.077178  11.091  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(PoissonPercentTEWA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+TEWA ~ percent_decid + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   944.8    968.6   -466.4    932.8      386 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)         0.41401    0.15721   2.633  0.00845 ** 
+percent_decid      -0.12262    0.17071  -0.718  0.47256    
+percent_pine       -0.22370    0.18418  -1.215  0.22451    
+percent_spruce     -1.25336    0.16953  -7.393 1.44e-13 ***
+RETN_m2            -0.46648    0.47639  -0.979  0.32748    
+Year_since_logging -0.07955    0.19730  -0.403  0.68682    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Adding the spatial autocorrelation terms does not alter the significant or direction of the other parameters, but some of the effect sizes change quite a bit.</p>
+</section>
+<section id="check-if-the-spatial-model-is-a-diffenret-and-a-better-fit-than-the-regular-model" class="level3">
+<h3 class="anchored" data-anchor-id="check-if-the-spatial-model-is-a-diffenret-and-a-better-fit-than-the-regular-model">Check if the spatial model is a diffenret and a better fit than the regular model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(xyPoissonTEWA, PoissonPercentTEWA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: obs_covs_df
+Models:
+PoissonPercentTEWA: TEWA ~ percent_decid + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+PoissonPercentTEWA:     Year_since_logging, zi=~0, disp=~1
+xyPoissonTEWA: TEWA ~ percent_decid + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+xyPoissonTEWA:     Year_since_logging + autoXY, zi=~0, disp=~1
+                   Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(&gt;Chisq)
+PoissonPercentTEWA  6 944.80 968.63 -466.40   932.80                         
+xyPoissonTEWA       7 831.42 859.22 -408.71   817.42 115.38      1  &lt; 2.2e-16
+                      
+PoissonPercentTEWA    
+xyPoissonTEWA      ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>However, the spatial model performs better, so we will keep that one.</p>
+</section>
+</section>
+<section id="osfl" class="level2">
+<h2 class="anchored" data-anchor-id="osfl">OSFL</h2>
+<p>Conclusions:</p>
+<ul>
+<li><p>No overdispersion</p></li>
+<li><p>Weak spatial autocorrelation</p></li>
+<li><p>Adding a spatial autocorrelation term affects the relevence of the RENT size term</p></li>
+<li><p>The spatial model performs better</p></li>
+<li><p>Not sure if adding the spatial autocorrelation term is a good idea</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>PoissonOSFL <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(OSFL <span class="sc">~</span> percent_decid <span class="sc">+</span> percent_pine <span class="sc">+</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                            percent_spruce <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                            RETN_m2 <span class="sc">+</span> Year_since_logging,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> obs_covs_df,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family=</span>poisson)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># rePoissonOSFL &lt;- glmmTMB(OSFL ~ percent_mixed + percent_pine + </span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">#                             percent_spruce +</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co">#                             RETN_m2 + Year_since_logging  + (1|location),</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">#                     data = obs_covs_df,</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                     family=poisson)</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(PoissonOSFL))  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="check-for-spatial-correlation-1" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-spatial-correlation-1">Check for spatial correlation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>resOSFL <span class="ot">&lt;-</span> <span class="fu">residuals</span>(PoissonOSFL)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>OSFLgam <span class="ot">&lt;-</span> <span class="fu">gam</span>(resOSFL <span class="sc">~</span> <span class="fu">s</span>(longitude, latitude), <span class="at">data =</span> obs_covs_df, <span class="at">family =</span> gaussian)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(OSFLgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(OSFLgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: gaussian 
+Link function: identity 
+
+Formula:
+resOSFL ~ s(longitude, latitude)
+
+Parametric coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) 2.269e-07  1.837e-02       0        1
+
+Approximate significance of smooth terms:
+                        edf Ref.df     F  p-value    
+s(longitude,latitude) 5.379  7.342 5.853 1.62e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+R-sq.(adj) =    0.1   Deviance explained = 11.3%
+GCV = 0.1344  Scale est. = 0.13222   n = 392</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>autoXY <span class="ot">&lt;-</span> <span class="fu">fitted</span>(OSFLgam) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corr, <span class="at">main=</span><span class="st">'OSFL null model'</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corrxy, <span class="at">main=</span><span class="st">'OSFL spatial model'</span>)    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(xyPoissonOSFL) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+OSFL ~ percent_decid + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging + autoXY
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   311.3    339.1   -148.7    297.3      385 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)         -2.3958     0.6529  -3.669 0.000243 ***
+percent_decid        0.3294     0.7709   0.427 0.669149    
+percent_pine         0.2797     0.7739   0.361 0.717782    
+percent_spruce       0.6723     0.6637   1.013 0.311064    
+RETN_m2              0.8941     0.6398   1.397 0.162266    
+Year_since_logging  -0.6989     0.4677  -1.494 0.135062    
+autoXY               5.9724     0.9980   5.984 2.18e-09 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(PoissonOSFL)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+OSFL ~ percent_decid + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   345.1    369.0   -166.6    333.1      386 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)         -3.0436     0.6487  -4.692 2.71e-06 ***
+percent_decid        0.4836     0.7816   0.619   0.5361    
+percent_pine         0.9239     0.7521   1.228   0.2193    
+percent_spruce       1.5712     0.6412   2.451   0.0143 *  
+RETN_m2              1.3463     0.6527   2.063   0.0391 *  
+Year_since_logging  -0.1617     0.4431  -0.365   0.7151    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model" class="level3">
+<h3 class="anchored" data-anchor-id="check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model">Check if the spatial model is a different and a better fit than the regular model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(xyPoissonOSFL, PoissonOSFL)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: obs_covs_df
+Models:
+PoissonOSFL: OSFL ~ percent_decid + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+PoissonOSFL:     Year_since_logging, zi=~0, disp=~1
+xyPoissonOSFL: OSFL ~ percent_decid + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+xyPoissonOSFL:     Year_since_logging + autoXY, zi=~0, disp=~1
+              Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(&gt;Chisq)    
+PoissonOSFL    6 345.13 368.95 -166.56   333.13                             
+xyPoissonOSFL  7 311.35 339.15 -148.68   297.35 35.777      1  2.212e-09 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="yrwa" class="level2">
+<h2 class="anchored" data-anchor-id="yrwa">YRWA</h2>
+<p>Conclusion: do not add spatial correlation for the YRWA. The original model correlation wraps around 0, the autocorrelation factore form the GAM is not significant, and the addition of the correlation factor in the model does not produce significant diffenreces between the two models.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>PoissonYRWA <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(YRWA <span class="sc">~</span> percent_decid <span class="sc">+</span> percent_pine <span class="sc">+</span> </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                            percent_spruce <span class="sc">+</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                            RETN_m2 <span class="sc">+</span> Year_since_logging,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> obs_covs_df,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family=</span>poisson)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co"># rePoissonYRWA &lt;- glmmTMB(YRWA ~ percent_decid + percent_pine + </span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co">#                             percent_spruce +</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="co">#                             RETN_m2 + Year_since_logging + (1|location),</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co">#                     data = obs_covs_df,</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                     family=poisson)</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co"># summary(PoissonYRWA)</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(PoissonYRWA))  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># testDispersion(simulateResiduals(PoissonYRWA))</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co"># testZeroInflation(simulateResiduals(PoissonYRWA))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="check-for-spatial-correlation-2" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-spatial-correlation-2">Check for spatial correlation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>resYRWA <span class="ot">&lt;-</span> <span class="fu">residuals</span>(PoissonYRWA)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>YRWAgam <span class="ot">&lt;-</span> <span class="fu">gam</span>(resYRWA <span class="sc">~</span> <span class="fu">s</span>(longitude, latitude), <span class="at">data =</span> obs_covs_df, <span class="at">family =</span> gaussian)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(YRWAgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(YRWAgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: gaussian 
+Link function: identity 
+
+Formula:
+resYRWA ~ s(longitude, latitude)
+
+Parametric coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) 1.356e-07  2.517e-02       0        1
+
+Approximate significance of smooth terms:
+                        edf Ref.df     F p-value
+s(longitude,latitude) 12.12  16.23 1.424   0.126
+
+R-sq.(adj) =  0.0499   Deviance explained = 7.93%
+GCV = 0.25698  Scale est. = 0.24838   n = 392</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>autoXY <span class="ot">&lt;-</span> <span class="fu">fitted</span>(YRWAgam) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The smoothing factor barely explains any variance, and it’s not significant.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corr, <span class="at">main=</span><span class="st">'YRWA null model'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corrxy, <span class="at">main=</span><span class="st">'YRWA spatial model'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-21-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Both models wrap around 0, which is not unexpected.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(xyPoissonYRWA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+YRWA ~ percent_decid + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging + autoXY
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   551.4    579.2   -268.7    537.4      385 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        -1.62359    0.31127  -5.216 1.83e-07 ***
+percent_decid      -0.34435    0.40100  -0.859   0.3905    
+percent_pine        0.50178    0.35049   1.432   0.1522    
+percent_spruce      0.22637    0.30201   0.750   0.4535    
+RETN_m2             0.02826    0.58680   0.048   0.9616    
+Year_since_logging  0.56478    0.27708   2.038   0.0415 *  
+autoXY              4.91974    0.94369   5.213 1.86e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(PoissonYRWA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+YRWA ~ percent_decid + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   579.1    603.0   -283.6    567.1      386 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)         -1.6645     0.3151  -5.283 1.27e-07 ***
+percent_decid       -0.3515     0.4024  -0.873   0.3824    
+percent_pine         0.5582     0.3503   1.594   0.1110    
+percent_spruce       0.4993     0.2984   1.674   0.0942 .  
+RETN_m2              0.3091     0.5872   0.526   0.5986    
+Year_since_logging   0.5594     0.2920   1.916   0.0554 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Including the spatial term doesn’t change much.</p>
+</section>
+<section id="check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-1" class="level3">
+<h3 class="anchored" data-anchor-id="check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-1">Check if the spatial model is a different and a better fit than the regular model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(xyPoissonYRWA, PoissonYRWA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: obs_covs_df
+Models:
+PoissonYRWA: YRWA ~ percent_decid + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+PoissonYRWA:     Year_since_logging, zi=~0, disp=~1
+xyPoissonYRWA: YRWA ~ percent_decid + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+xyPoissonYRWA:     Year_since_logging + autoXY, zi=~0, disp=~1
+              Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(&gt;Chisq)    
+PoissonYRWA    6 579.12 602.95 -283.56   567.12                             
+xyPoissonYRWA  7 551.37 579.16 -268.68   537.37 29.758      1  4.894e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Although the spatial model performs better, there is also evidence against choosing that model. Adding or omitting the spatial term should’ve have a large impact.</p>
+</section>
+</section>
+<section id="revi" class="level2">
+<h2 class="anchored" data-anchor-id="revi">REVI</h2>
+<p>Conclusion:</p>
+<ul>
+<li>Smooth spline from the GAM significant, R^2 = 0.225</li>
+<li>Including the autiXY factor in the Poisson does not reduce meaning from other covariates</li>
+<li>Spatial autocorrelation plot better</li>
+<li>Chi square indicates the models are different, the AIC with the autoXY is better.</li>
+<li>Include the autoXY factor</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>PoissonREVI <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(REVI <span class="sc">~</span>  percent_pine <span class="sc">+</span> </span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>                            percent_spruce <span class="sc">+</span> percent_mixed <span class="sc">+</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>                            RETN_m2 <span class="sc">+</span> Year_since_logging,</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> obs_covs_df,</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family=</span>poisson)</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="co"># rePoissonREVI &lt;- glmmTMB(REVI ~  percent_pine + </span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="co">#                             percent_spruce + percent_mixed +</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="co">#                             RETN_m2 + Year_since_logging + (1|location),</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="co">#                     data = obs_covs_df,</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                     family=poisson)                    </span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(PoissonREVI)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+REVI ~ percent_pine + percent_spruce + percent_mixed + RETN_m2 +  
+    Year_since_logging
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   590.4    614.2   -289.2    578.4      386 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)          0.3421     0.2045   1.673 0.094343 .  
+percent_pine        -0.7671     0.2195  -3.495 0.000475 ***
+percent_spruce      -2.5729     0.2643  -9.735  &lt; 2e-16 ***
+percent_mixed       -0.6291     0.2192  -2.870 0.004099 ** 
+RETN_m2              0.3433     0.5314   0.646 0.518291    
+Year_since_logging  -0.2411     0.2765  -0.872 0.383215    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(PoissonREVI))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>There is a bit of minor overdispersion.</p>
+<section id="check-for-spatial-correlation-3" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-spatial-correlation-3">Check for spatial correlation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>resREVI <span class="ot">&lt;-</span> <span class="fu">residuals</span>(PoissonREVI)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>REVIgam <span class="ot">&lt;-</span> <span class="fu">gam</span>(resREVI <span class="sc">~</span> <span class="fu">s</span>(longitude, latitude), <span class="at">data =</span> obs_covs_df, <span class="at">family =</span> gaussian)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(REVIgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(REVIgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: gaussian 
+Link function: identity 
+
+Formula:
+resREVI ~ s(longitude, latitude)
+
+Parametric coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) -3.489e-10  2.575e-02       0        1
+
+Approximate significance of smooth terms:
+                        edf Ref.df     F p-value    
+s(longitude,latitude) 23.02  26.85 4.587  &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+R-sq.(adj) =  0.225   Deviance explained = 27.1%
+GCV = 0.27684  Scale est. = 0.25987   n = 392</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>autoXY <span class="ot">&lt;-</span> <span class="fu">fitted</span>(REVIgam) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>There is a lot oof spatial correlation!</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corr, <span class="at">main=</span><span class="st">'REVI null model'</span>)</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corrxy, <span class="at">main=</span><span class="st">'REVI spatial model'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The spatial model fixes the correlation issue.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(xyPoissonREVI)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+REVI ~ percent_mixed + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging + autoXY
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   533.7    561.5   -259.9    519.7      385 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        -0.09447    0.23272  -0.406   0.6848    
+percent_mixed      -0.52990    0.22364  -2.369   0.0178 *  
+percent_pine       -0.89816    0.22997  -3.906 9.40e-05 ***
+percent_spruce     -1.99588    0.27092  -7.367 1.74e-13 ***
+RETN_m2             0.69322    0.51652   1.342   0.1796    
+Year_since_logging -0.14131    0.29460  -0.480   0.6315    
+autoXY              1.71591    0.21420   8.011 1.14e-15 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(PoissonREVI)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+REVI ~ percent_pine + percent_spruce + percent_mixed + RETN_m2 +  
+    Year_since_logging
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   590.4    614.2   -289.2    578.4      386 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)          0.3421     0.2045   1.673 0.094343 .  
+percent_pine        -0.7671     0.2195  -3.495 0.000475 ***
+percent_spruce      -2.5729     0.2643  -9.735  &lt; 2e-16 ***
+percent_mixed       -0.6291     0.2192  -2.870 0.004099 ** 
+RETN_m2              0.3433     0.5314   0.646 0.518291    
+Year_since_logging  -0.2411     0.2765  -0.872 0.383215    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-2" class="level3">
+<h3 class="anchored" data-anchor-id="check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-2">Check if the spatial model is a different and a better fit than the regular model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(xyPoissonREVI, PoissonREVI)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: obs_covs_df
+Models:
+PoissonREVI: REVI ~ percent_pine + percent_spruce + percent_mixed + RETN_m2 + , zi=~0, disp=~1
+PoissonREVI:     Year_since_logging, zi=~0, disp=~1
+xyPoissonREVI: REVI ~ percent_mixed + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+xyPoissonREVI:     Year_since_logging + autoXY, zi=~0, disp=~1
+              Df    AIC    BIC  logLik deviance Chisq Chi Df Pr(&gt;Chisq)    
+PoissonREVI    6 590.37 614.20 -289.19   578.37                            
+xyPoissonREVI  7 533.71 561.51 -259.86   519.71 58.66      1  1.874e-14 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="wtsp" class="level2">
+<h2 class="anchored" data-anchor-id="wtsp">WTSP</h2>
+<p>Conclusion</p>
+<ul>
+<li>Spatial correlation in original model, form the correlation graph</li>
+<li>Spatial correlation gam: R^2 = 0.206, highly significant</li>
+<li>Adding the autoXY alters the habitat estimators, but not the treatments</li>
+<li>Correlation plot much better</li>
+<li>Chi square: models very diffenret, autoXY better log-lik</li>
+<li>Conclusion: add the autoXY</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>PoissonWTSP <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(WTSP <span class="sc">~</span> percent_decid <span class="sc">+</span> percent_pine <span class="sc">+</span> </span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>                            percent_spruce <span class="sc">+</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>                            RETN_m2 <span class="sc">+</span> Year_since_logging,</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> obs_covs_df,</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family=</span>poisson)</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a><span class="co"># rePoissonWTSP &lt;- glmmTMB(WTSP ~ percent_decid + percent_pine + </span></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a><span class="co">#                             percent_spruce +</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a><span class="co">#                             RETN_m2 + Year_since_logging + (1|location),</span></span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a><span class="co">#                     data = obs_covs_df,</span></span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                     family=poisson)</span></span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(PoissonWTSP)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+WTSP ~ percent_decid + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+  1527.0   1550.9   -757.5   1515.0      386 
+
+
+Conditional model:
+                    Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)         1.517406   0.093462  16.236  &lt; 2e-16 ***
+percent_decid      -0.033919   0.109049  -0.311    0.756    
+percent_pine       -0.134642   0.116230  -1.158    0.247    
+percent_spruce     -0.561417   0.095502  -5.879 4.14e-09 ***
+RETN_m2            -0.006474   0.230708  -0.028    0.978    
+Year_since_logging -0.588490   0.110948  -5.304 1.13e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(PoissonWTSP))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="check-for-spatial-correlation-4" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-spatial-correlation-4">Check for spatial correlation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>resWTSP <span class="ot">&lt;-</span> <span class="fu">residuals</span>(PoissonWTSP)</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>WTSPgam <span class="ot">&lt;-</span> <span class="fu">gam</span>(resWTSP <span class="sc">~</span> <span class="fu">s</span>(longitude, latitude), <span class="at">data =</span> obs_covs_df, <span class="at">family =</span> gaussian)</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(WTSPgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(WTSPgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: gaussian 
+Link function: identity 
+
+Formula:
+resWTSP ~ s(longitude, latitude)
+
+Parametric coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) 1.291e-08  7.664e-02       0        1
+
+Approximate significance of smooth terms:
+                       edf Ref.df     F p-value    
+s(longitude,latitude) 24.6  27.76 4.103  &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+R-sq.(adj) =  0.206   Deviance explained = 25.6%
+GCV = 2.4632  Scale est. = 2.3023    n = 392</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>autoXY <span class="ot">&lt;-</span> <span class="fu">fitted</span>(WTSPgam) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corr, <span class="at">main=</span><span class="st">'WTSP null model'</span>)     </span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corrxy, <span class="at">main=</span><span class="st">'WTSP spatial model'</span>)     </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(xyPoissonWTSP)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+WTSP ~ percent_mixed + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging + autoXY
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+  1384.5   1412.3   -685.3   1370.5      385 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)         1.18094    0.10217  11.558  &lt; 2e-16 ***
+percent_mixed       0.03748    0.11140   0.336  0.73654    
+percent_pine        0.08282    0.11075   0.748  0.45455    
+percent_spruce     -0.28559    0.09314  -3.066  0.00217 ** 
+RETN_m2             0.42016    0.24226   1.734  0.08286 .  
+Year_since_logging -0.50125    0.11680  -4.291 1.78e-05 ***
+autoXY              0.55979    0.04785  11.698  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(PoissonWTSP)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+WTSP ~ percent_decid + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+  1527.0   1550.9   -757.5   1515.0      386 
+
+
+Conditional model:
+                    Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)         1.517406   0.093462  16.236  &lt; 2e-16 ***
+percent_decid      -0.033919   0.109049  -0.311    0.756    
+percent_pine       -0.134642   0.116230  -1.158    0.247    
+percent_spruce     -0.561417   0.095502  -5.879 4.14e-09 ***
+RETN_m2            -0.006474   0.230708  -0.028    0.978    
+Year_since_logging -0.588490   0.110948  -5.304 1.13e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-3" class="level3">
+<h3 class="anchored" data-anchor-id="check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-3">Check if the spatial model is a different and a better fit than the regular model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(xyPoissonWTSP, PoissonWTSP)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: obs_covs_df
+Models:
+PoissonWTSP: WTSP ~ percent_decid + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+PoissonWTSP:     Year_since_logging, zi=~0, disp=~1
+xyPoissonWTSP: WTSP ~ percent_mixed + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+xyPoissonWTSP:     Year_since_logging + autoXY, zi=~0, disp=~1
+              Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(&gt;Chisq)    
+PoissonWTSP    6 1527.0 1550.8 -757.51   1515.0                             
+xyPoissonWTSP  7 1384.5 1412.3 -685.27   1370.5 144.48      1  &lt; 2.2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="rcki" class="level2">
+<h2 class="anchored" data-anchor-id="rcki">RCKI</h2>
+<p>Conclusion:</p>
+<ul>
+<li>Not much spatial correlation to start with</li>
+<li>GAM significant, but R^2 very small</li>
+<li>?</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>PoissonRCKI <span class="ot">&lt;-</span> <span class="fu">glmmTMB</span>(RCKI <span class="sc">~</span> percent_decid <span class="sc">+</span> percent_pine <span class="sc">+</span> </span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>                            percent_spruce <span class="sc">+</span></span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>                            RETN_m2 <span class="sc">+</span> Year_since_logging,</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> obs_covs_df,</span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">family=</span>poisson)</span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a><span class="co"># rePoissonRCKI &lt;- glmmTMB(RCKI ~ percent_decid + percent_pine + </span></span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a><span class="co">#                             percent_spruce +</span></span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a><span class="co">#                             RETN_m2 + Year_since_logging + (1|location),</span></span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                     data = obs_covs_df,</span></span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a><span class="co">#                     family=poisson)</span></span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a><span class="co"># summary(rePoissonRCKI)</span></span>
+<span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(PoissonRCKI))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="check-for-spatial-correlation-5" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-spatial-correlation-5">Check for spatial correlation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>resRCKI <span class="ot">&lt;-</span> <span class="fu">residuals</span>(PoissonRCKI)</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>RCKIgam <span class="ot">&lt;-</span> <span class="fu">gam</span>(resRCKI <span class="sc">~</span> <span class="fu">s</span>(longitude, latitude), <span class="at">data =</span> obs_covs_df, <span class="at">family =</span> gaussian)</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(RCKIgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(RCKIgam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: gaussian 
+Link function: identity 
+
+Formula:
+resRCKI ~ s(longitude, latitude)
+
+Parametric coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) -1.819e-08  2.799e-02       0        1
+
+Approximate significance of smooth terms:
+                        edf Ref.df     F p-value   
+s(longitude,latitude) 2.722   3.33 5.307 0.00105 **
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+R-sq.(adj) =  0.0388   Deviance explained = 4.55%
+GCV = 0.30999  Scale est. = 0.30705   n = 392</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>autoXY <span class="ot">&lt;-</span> <span class="fu">fitted</span>(RCKIgam) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Weak spatial correlation.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corr, <span class="at">main=</span><span class="st">'RCKI null model'</span>)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(corrxy, <span class="at">main=</span><span class="st">'RCKI spatial model'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="poisson_vs_ZI_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The null model is already pretty good. Unsure whether adding the spatial correlation facotr is necessary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(xyPoissonRCKI)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+RCKI ~ percent_mixed + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging + autoXY
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   433.8    461.6   -209.9    419.8      385 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)         -2.5029     0.5002  -5.004 5.62e-07 ***
+percent_mixed        0.1710     0.6756   0.253   0.8001    
+percent_pine         1.1360     0.5353   2.122   0.0338 *  
+percent_spruce       0.7552     0.4977   1.517   0.1291    
+RETN_m2             -1.5226     0.9928  -1.534   0.1251    
+Year_since_logging   0.2834     0.3753   0.755   0.4502    
+autoXY               5.9837     1.0980   5.450 5.04e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(PoissonRCKI)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: poisson  ( log )
+Formula:          
+RCKI ~ percent_decid + percent_pine + percent_spruce + RETN_m2 +  
+    Year_since_logging
+Data: obs_covs_df
+
+     AIC      BIC   logLik deviance df.resid 
+   463.7    487.5   -225.9    451.7      386 
+
+
+Conditional model:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        -2.95762    0.52546  -5.629 1.82e-08 ***
+percent_decid      -0.05773    0.68051  -0.085  0.93239    
+percent_pine        1.45698    0.56345   2.586  0.00972 ** 
+percent_spruce      1.48036    0.50890   2.909  0.00363 ** 
+RETN_m2            -1.15335    1.00664  -1.146  0.25190    
+Year_since_logging  0.73086    0.37050   1.973  0.04854 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Adding the spatial factor nullifies the effect of year since logging. We will have to explore a bit more why that could be.</p>
+</section>
+<section id="check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-4" class="level3">
+<h3 class="anchored" data-anchor-id="check-if-the-spatial-model-is-a-different-and-a-better-fit-than-the-regular-model-4">Check if the spatial model is a different and a better fit than the regular model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(xyPoissonRCKI, PoissonRCKI)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: obs_covs_df
+Models:
+PoissonRCKI: RCKI ~ percent_decid + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+PoissonRCKI:     Year_since_logging, zi=~0, disp=~1
+xyPoissonRCKI: RCKI ~ percent_mixed + percent_pine + percent_spruce + RETN_m2 + , zi=~0, disp=~1
+xyPoissonRCKI:     Year_since_logging + autoXY, zi=~0, disp=~1
+              Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(&gt;Chisq)    
+PoissonRCKI    6 463.71 487.54 -225.86   451.71                             
+xyPoissonRCKI  7 433.82 461.61 -209.91   419.82 31.897      1  1.626e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

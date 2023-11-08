@@ -1,0 +1,676 @@
+---
+title: "Poisson, Zero-Inflation, and Spatial Autocorrelation?"
+format:
+  html:
+    layout:
+      width: '95%'
+    code-fold: true
+toc: true
+toc-depth: 3
+toc-expand: 2
+code-copy: hover
+---
+
+# Purpose
+
+On this page, I will be testing overdispersion, checking residuals, and spatial autocorrelation for each of the 6 species. Previously, I checked whether adding a random effect for 'location' was useful, and that was axed for all the birds.
+
+The flow is as such:
+
+1.  Fit a Poisson model. We'll call it the 'null' model
+2.  Plot the residuals of the null model
+3.  Extract the residuals of the null model, and fit a gam to the residuals to see whether latitude and longitude can explain some variance
+4.  Create an autocorrelation vector from the fitted gam
+5.  Add the autocorrelation vector to the null model
+6.  Plot the autocorrelation for the residuals of both null and spatial models
+7.  Compare summaries for both models
+8.  Check with a Chi Square whether the log-likelihoods of the two models are different
+
+The decision to include or not the spatial autocorrelation vector depends on whether it explains variation in the spatial gam, whether it improves the spatial correlation of the residuals of the Poisson model, whether the estimates form the Poisson glm are unnecessarily altered, and whether one of the two models has a stronger log-likelihood.
+
+The decision of including a spatial term should be considered in context to how this model will be used. Including the spatial term reduces generalisability, but it is required for some species. It will make predictions more difficult. But if the model is only used as a fitted empirical model, then the tradeoff is acceptable.
+
+# Preparing for the models
+
+Load packages and set paths.
+
+```{r}
+#| output: false
+library(glmmTMB)
+library(DHARMa)
+library(ggplot2)
+library(bbmle) 
+library(nlme)
+library(ncf)
+library(dplyr)
+library(mgcv)
+
+covariates_path <- "C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/covariates"
+obs_path <- "C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/All Processed Final Location"
+
+```
+
+Load data
+
+```{r}
+#| output: false
+full_covariates <- read.csv(file.path(covariates_path, 'merged_covariates.csv'))
+max_count <- read.csv(file.path(obs_path, 'max_count_all_spp.csv'))
+
+```
+
+Prepare data for modeling
+
+```{r}
+#| output: false
+full_covariates$Veg_cat <- factor(full_covariates$Veg_cat)
+# Add 'nb' to neighbourhood effect 
+bird_columns <- c('TEWA', 'RCKI', 'WTSP', 'YRWA', 'REVI', 'OSFL')
+new_names <- paste0("nb_", bird_columns)
+colnames(full_covariates)[colnames(full_covariates) %in% bird_columns] <- new_names
+
+obs_covs_df <- cbind(max_count, full_covariates)
+head(obs_covs_df)
+# write.csv(obs_covs_df, file = file.path(obs_path, "max_count_all_covs.csv"))
+# Define the predictors to scale
+predictors_to_scale <- c('RETN_m2', 'Year_since_logging')
+
+# Apply MinMax scaling to each predictor
+obs_covs_df[, predictors_to_scale] <- lapply(obs_covs_df[, predictors_to_scale], function(x) {
+  (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+})
+
+# summary(obs_covs_df)
+obs_covs_df <- obs_covs_df[, !duplicated(colnames(obs_covs_df))]
+
+```
+
+# Modelling
+
+## TEWA
+
+There is some spatial correlation in the null model. Including a Random effect (1\|location) does not alleviate it or add much precision to the model.
+
+Let's test it with the xy coefficient.
+
+Conclusion: get rid of RE, add autoXY.
+
+```{r}
+#| code-fold: false
+PoissonPercentTEWA <- glmmTMB(TEWA ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                             RETN_m2 + Year_since_logging,
+                    data = obs_covs_df,
+                    family=poisson)
+
+
+# rexyPoissonTEWA <- glmmTMB(TEWA ~ percent_decid + percent_pine + 
+#                             percent_spruce +
+#                              RETN_m2 + Year_since_logging + autoXY,
+#                     data = obs_covs_df,
+#                     family=poisson)
+# ```
+
+plot(simulateResiduals(PoissonPercentTEWA))  
+
+```
+
+The residuals are slightly overdispersed, but there is a lot of data. Including a inflation terms introduces other issues in fit, so we will keep is as Poisson,
+
+### Check for spatial correlation
+
+R-sq.(adj) = 0.309 , lots of spatial correlation, which explains 30% of the variance in the residuals
+
+```{r}
+#| code-fold: false
+par(mfrow=c(1,1))
+
+resTEWA <- residuals(PoissonPercentTEWA)
+TEWAgam <- gam(resTEWA ~ s(longitude, latitude), data = obs_covs_df, family = gaussian)
+plot(TEWAgam)
+summary(TEWAgam)
+autoXY <- fitted(TEWAgam) 
+```
+
+There looks to be some spatial autocorrelation. This GAM checks whether a smoothing function of latitude and longitude can explain the variation in the residuals from the Poisson GLM. The R\^2 = 0.3, and with p \< 0.001.
+
+```{r}
+#| echo: true
+#| include: false
+
+E <- residuals(PoissonPercentTEWA)
+corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+
+
+        
+xyPoissonTEWA <- glmmTMB(TEWA ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                             RETN_m2 + Year_since_logging + autoXY,
+                    data = obs_covs_df,
+                    family=poisson)
+
+Exy <- residuals(xyPoissonTEWA)
+corrxy <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, Exy, resamp = 99, type = "boot")
+
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(corr, main='TEWA null model')
+plot(corrxy, main='TEWA spatial model')
+```
+
+```{r}
+#| code-fold: false
+summary(xyPoissonTEWA)
+summary(PoissonPercentTEWA)
+
+```
+
+Adding the spatial autocorrelation terms does not alter the significant or direction of the other parameters, but some of the effect sizes change quite a bit.
+
+### Check if the spatial model is a diffenret and a better fit than the regular model
+
+```{r}
+#| code-fold: false
+anova(xyPoissonTEWA, PoissonPercentTEWA)
+```
+
+However, the spatial model performs better, so we will keep that one.
+
+## OSFL
+
+Conclusions:
+
+-   No overdispersion
+
+-   Weak spatial autocorrelation
+
+-   Adding a spatial autocorrelation term affects the relevence of the RENT size term
+
+-   The spatial model performs better
+
+-   Not sure if adding the spatial autocorrelation term is a good idea
+
+```{r}
+#| code-fold: false
+PoissonOSFL <- glmmTMB(OSFL ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging,
+                    data = obs_covs_df,
+                    family=poisson)
+
+# rePoissonOSFL <- glmmTMB(OSFL ~ percent_mixed + percent_pine + 
+#                             percent_spruce +
+#                             RETN_m2 + Year_since_logging  + (1|location),
+#                     data = obs_covs_df,
+#                     family=poisson)
+
+
+plot(simulateResiduals(PoissonOSFL))  
+
+```
+
+### Check for spatial correlation
+
+```{r}
+#| include: false
+ 
+# par(mfrow=c(1,2))
+# E <- residuals(PoissonOSFL)
+# RE <- residuals(xyPoissonOSFL)
+# corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+# corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, RE, resamp = 99, type = "boot")
+# plot(corr, main='OSFL spatial correlation, XY')
+# plot(corrRE, main='OSFL spatial correlation, with RE')
+```
+
+```{r}
+#| code-fold: false
+par(mfrow=c(1,1))
+resOSFL <- residuals(PoissonOSFL)
+OSFLgam <- gam(resOSFL ~ s(longitude, latitude), data = obs_covs_df, family = gaussian)
+plot(OSFLgam)
+summary(OSFLgam)
+autoXY <- fitted(OSFLgam) 
+```
+
+```{r}
+#| echo: true
+#| include: false
+
+E <- residuals(PoissonOSFL)
+corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+
+xyPoissonOSFL <- glmmTMB(OSFL ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + autoXY,
+                    data = obs_covs_df,
+                    family=poisson)
+
+
+Exy <- residuals(xyPoissonOSFL)
+corrxy <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, Exy, resamp = 99, type = "boot")     
+
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(corr, main='OSFL null model')
+
+plot(corrxy, main='OSFL spatial model')    
+```
+
+```{r}
+#| code-fold: false
+summary(xyPoissonOSFL) 
+summary(PoissonOSFL)
+```
+
+### Check if the spatial model is a different and a better fit than the regular model
+
+```{r}
+#| code-fold: false
+anova(xyPoissonOSFL, PoissonOSFL)
+```
+
+## YRWA
+
+Conclusion: do not add spatial correlation for the YRWA. The original model correlation wraps around 0, the autocorrelation factore form the GAM is not significant, and the addition of the correlation factor in the model does not produce significant diffenreces between the two models.
+
+```{r}
+#| code-fold: false
+PoissonYRWA <- glmmTMB(YRWA ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging,
+                    data = obs_covs_df,
+                    family=poisson)
+
+# rePoissonYRWA <- glmmTMB(YRWA ~ percent_decid + percent_pine + 
+#                             percent_spruce +
+#                             RETN_m2 + Year_since_logging + (1|location),
+#                     data = obs_covs_df,
+#                     family=poisson)
+
+# summary(PoissonYRWA)
+plot(simulateResiduals(PoissonYRWA))  
+
+# testDispersion(simulateResiduals(PoissonYRWA))
+# testZeroInflation(simulateResiduals(PoissonYRWA))
+```
+
+### Check for spatial correlation
+
+```{r}
+#| include: false
+#| 
+# par(mfrow=c(1,2))
+# E <- residuals(PoissonYRWA)
+# RE <- residuals(rePoissonYRWA)
+# corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+# corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, RE, resamp = 99, type = "boot")
+# plot(corr, main='YRWA spatial correlation, no RE')
+# plot(corrRE, main='YRWA spatial correlation, with RE')
+```
+
+```{r}
+#| code-fold: false
+par(mfrow=c(1,1))
+resYRWA <- residuals(PoissonYRWA)
+YRWAgam <- gam(resYRWA ~ s(longitude, latitude), data = obs_covs_df, family = gaussian)
+plot(YRWAgam)
+summary(YRWAgam)
+autoXY <- fitted(YRWAgam) 
+
+```
+
+The smoothing factor barely explains any variance, and it's not significant.
+
+```{r}
+#| echo: true
+#| include: false
+#| 
+
+E <- residuals(PoissonYRWA)
+corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+
+xyPoissonYRWA <- glmmTMB(YRWA ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + autoXY,
+                    data = obs_covs_df,
+                    family=poisson)
+
+
+Exy <- residuals(xyPoissonYRWA)
+corrxy <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, Exy, resamp = 99, type = "boot")
+
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(corr, main='YRWA null model')
+plot(corrxy, main='YRWA spatial model')
+```
+
+Both models wrap around 0, which is not unexpected.
+
+```{r}
+#| code-fold: false
+summary(xyPoissonYRWA)
+summary(PoissonYRWA)
+```
+
+Including the spatial term doesn't change much.
+
+### Check if the spatial model is a different and a better fit than the regular model
+
+```{r}
+#| code-fold: false
+anova(xyPoissonYRWA, PoissonYRWA)
+```
+
+Although the spatial model performs better, there is also evidence against choosing that model. Adding or omitting the spatial term should've have a large impact.
+
+## REVI
+
+Conclusion:
+
+-   Smooth spline from the GAM significant, R\^2 = 0.225
+-   Including the autiXY factor in the Poisson does not reduce meaning from other covariates
+-   Spatial autocorrelation plot better
+-   Chi square indicates the models are different, the AIC with the autoXY is better.
+-   Include the autoXY factor
+
+```{r}
+#| code-fold: false
+PoissonREVI <- glmmTMB(REVI ~  percent_pine + 
+                            percent_spruce + percent_mixed +
+                            RETN_m2 + Year_since_logging,
+                    data = obs_covs_df,
+                    family=poisson)
+
+# rePoissonREVI <- glmmTMB(REVI ~  percent_pine + 
+#                             percent_spruce + percent_mixed +
+#                             RETN_m2 + Year_since_logging + (1|location),
+#                     data = obs_covs_df,
+#                     family=poisson)                    
+summary(PoissonREVI)
+plot(simulateResiduals(PoissonREVI))
+```
+
+There is a bit of minor overdispersion.
+
+### Check for spatial correlation
+
+```{r}
+#| include: false
+
+# par(mfrow=c(1,2))
+# E <- residuals(PoissonREVI)
+# RE <- residuals(rePoissonREVI)
+# corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+# corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, RE, resamp = 99, type = "boot")
+# plot(corr, main='REVI spatial correlation, no RE')
+# plot(corrRE, main='REVI spatial correlation, with RE')
+```
+
+
+
+```{r}
+#| code-fold: false
+par(mfrow=c(1,1))
+resREVI <- residuals(PoissonREVI)
+REVIgam <- gam(resREVI ~ s(longitude, latitude), data = obs_covs_df, family = gaussian)
+plot(REVIgam)
+summary(REVIgam)
+autoXY <- fitted(REVIgam) 
+```
+
+There is a lot oof spatial correlation!
+
+```{r}
+#| echo: true
+#| include: false
+
+E <- residuals(PoissonREVI)
+corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+
+xyPoissonREVI <- glmmTMB(REVI ~ percent_mixed + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + autoXY,
+                    data = obs_covs_df,
+                    family=poisson)
+
+
+Exy <- residuals(xyPoissonREVI)
+corrxy <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, Exy, resamp = 99, type = "boot")
+
+
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(corr, main='REVI null model')
+plot(corrxy, main='REVI spatial model')
+```
+
+The spatial model fixes the correlation issue.
+
+```{r}
+#| code-fold: false
+summary(xyPoissonREVI)
+summary(PoissonREVI)
+
+```
+
+### Check if the spatial model is a different and a better fit than the regular model
+
+```{r}
+#| code-fold: false
+anova(xyPoissonREVI, PoissonREVI)
+```
+
+
+```{r}
+#| include: false
+# Poisson3REVI <- glmmTMB(REVI ~  percent_pine + 
+#                             percent_spruce +
+#                             RETN_m2 + Year_since_logging + (1|location),
+#                     data = obs_covs_df,
+#                     family=nbinom1
+#                     )
+
+# summary(Poisson3REVI)
+# plot(simulateResiduals(Poisson3REVI))
+
+# hist(obs_covs_df$REVI)
+
+# mean(obs_covs_df$REVI)
+# testDispersion(simulateResiduals(Poisson3REVI))
+# testZeroInflation(simulateResiduals(Poisson3REVI))
+```
+
+## WTSP
+
+Conclusion
+
+-   Spatial correlation in original model, form the correlation graph
+-   Spatial correlation gam: R\^2 = 0.206, highly significant
+-   Adding the autoXY alters the habitat estimators, but not the treatments
+-   Correlation plot much better
+-   Chi square: models very diffenret, autoXY better log-lik
+-   Conclusion: add the autoXY
+
+```{r}
+#| code-fold: false
+PoissonWTSP <- glmmTMB(WTSP ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging,
+                    data = obs_covs_df,
+                    family=poisson)
+
+# rePoissonWTSP <- glmmTMB(WTSP ~ percent_decid + percent_pine + 
+#                             percent_spruce +
+#                             RETN_m2 + Year_since_logging + (1|location),
+#                     data = obs_covs_df,
+#                     family=poisson)
+summary(PoissonWTSP)
+plot(simulateResiduals(PoissonWTSP))
+```
+
+### Check for spatial correlation
+
+```{r}
+#| include: false
+# par(mfrow=c(1,1))
+# E <- residuals(PoissonWTSP)
+# # RE <- residuals(rePoissonWTSP)
+# corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+# corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, RE, resamp = 99, type = "boot")
+# plot(corr, main='WTSP spatial correlation, no RE')
+# plot(corrRE, main='WTSP spatial correlation, with RE')
+```
+
+```{r}
+#| code-fold: false
+par(mfrow=c(1,1))
+resWTSP <- residuals(PoissonWTSP)
+WTSPgam <- gam(resWTSP ~ s(longitude, latitude), data = obs_covs_df, family = gaussian)
+plot(WTSPgam)
+summary(WTSPgam)
+autoXY <- fitted(WTSPgam) 
+
+```
+
+```{r}
+#| echo: true
+#| include: false
+
+E <- residuals(PoissonWTSP)
+corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+
+xyPoissonWTSP <- glmmTMB(WTSP ~ percent_mixed + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + autoXY,
+                    data = obs_covs_df,
+                    family=poisson)
+
+Exy <- residuals(xyPoissonWTSP)
+corrxy <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, Exy, resamp = 99, type = "boot")
+               
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(corr, main='WTSP null model')     
+plot(corrxy, main='WTSP spatial model')     
+```
+
+```{r}
+#| code-fold: false
+summary(xyPoissonWTSP)
+summary(PoissonWTSP)
+```
+
+### Check if the spatial model is a different and a better fit than the regular model
+
+```{r}
+#| code-fold: false
+anova(xyPoissonWTSP, PoissonWTSP)
+```
+
+## RCKI
+
+Conclusion:
+
+-   Not much spatial correlation to start with
+-   GAM significant, but R\^2 very small
+-   ?
+
+```{r}
+#| code-fold: false
+par(mfrow=c(1,1))
+PoissonRCKI <- glmmTMB(RCKI ~ percent_decid + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging,
+                    data = obs_covs_df,
+                    family=poisson)
+
+# rePoissonRCKI <- glmmTMB(RCKI ~ percent_decid + percent_pine + 
+#                             percent_spruce +
+#                             RETN_m2 + Year_since_logging + (1|location),
+#                     data = obs_covs_df,
+#                     family=poisson)
+
+# summary(rePoissonRCKI)
+plot(simulateResiduals(PoissonRCKI))
+
+```
+
+### Check for spatial correlation
+
+```{r}
+#| include: false
+# par(mfrow=c(1,2))
+# E <- residuals(PoissonRCKI)
+# RE <- residuals(rePoissonRCKI)
+# corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+# corrRE <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, RE, resamp = 99, type = "boot")
+# plot(corr, main='RCKI spatial correlation, no RE')
+# plot(corrRE, main='RCKI spatial correlation, with RE')
+
+```
+
+```{r}
+#| code-fold: false
+par(mfrow=c(1,1))
+resRCKI <- residuals(PoissonRCKI)
+RCKIgam <- gam(resRCKI ~ s(longitude, latitude), data = obs_covs_df, family = gaussian)
+plot(RCKIgam)
+summary(RCKIgam)
+autoXY <- fitted(RCKIgam) 
+```
+
+Weak spatial correlation.
+
+```{r}
+#| echo: true
+#| include: false
+
+E <- residuals(PoissonRCKI)
+corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
+
+
+xyPoissonRCKI <- glmmTMB(RCKI ~ percent_mixed + percent_pine + 
+                            percent_spruce +
+                            RETN_m2 + Year_since_logging + autoXY,
+                    data = obs_covs_df,
+                    family=poisson)
+
+
+Exy <- residuals(xyPoissonRCKI)
+corrxy <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, Exy, resamp = 99, type = "boot")
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(corr, main='RCKI null model')
+plot(corrxy, main='RCKI spatial model')
+```
+
+The null model is already pretty good. Unsure whether adding the spatial correlation facotr is necessary.
+
+```{r}
+#| code-fold: false
+summary(xyPoissonRCKI)
+summary(PoissonRCKI)
+```
+
+Adding the spatial factor nullifies the effect of year since logging. We will have to explore a bit more why that could be.
+
+### Check if the spatial model is a different and a better fit than the regular model
+
+```{r}
+#| code-fold: false
+anova(xyPoissonRCKI, PoissonRCKI)
+```
