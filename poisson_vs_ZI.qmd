@@ -326,6 +326,7 @@ autoXY <- fitted(YRWAgam)
 
 The smoothing factor barely explains any variance, and it's not significant.
 
+
 ```{r}
 #| echo: true
 #| include: false
