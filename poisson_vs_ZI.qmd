@@ -812,5 +812,5 @@ Adding the spatial factor nullifies the effect of year since logging. We will ha
 ```{r}
 #| code-fold: false
 #| include: false
-anova(xyPoissonRCKI, PoissonRCKI)
+# anova(xyPoissonRCKI, PoissonRCKIbase)
 ```
