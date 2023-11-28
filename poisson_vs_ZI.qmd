@@ -150,7 +150,7 @@ There looks to be some spatial autocorrelation. This GAM checks whether a smooth
 #| echo: true
 #| include: false
 
-E <- residuals(PoissonTEWA)
+E <- residuals(PoissonTEWAbase)
 corr <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, E, resamp = 99, type = "boot")
 
 Ere <- residuals(rePoissonTEWA)
@@ -407,7 +407,7 @@ corrRExy <- spline.correlog(obs_covs_df$longitude, obs_covs_df$latitude, Erexy, 
 
 ```{r}
 par(mfrow=c(1,4))
-plot(corr, main='YRWA null model')
+plot(corr, main='YRWA base model')
 plot(corrRE, main='YRWA RE model')
 plot(corrxy, main='YRWA spatial model')
 plot(corrRExy, main='YRWA spatial RE model')
