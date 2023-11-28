@@ -1,5 +1,5 @@
 ---
-title: "Poisson, Zero-Inflation, and Spatial Autocorrelation?"
+title: "Poisson, Dispersion, and Spatial Autocorrelation?"
 format:
   html:
     layout:
@@ -9,6 +9,9 @@ toc: true
 toc-depth: 3
 toc-expand: 2
 code-copy: hover
+project:
+  type: website
+  output-dir: docs
 ---
 
 # Purpose
