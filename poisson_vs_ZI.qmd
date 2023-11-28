@@ -444,10 +444,10 @@ The spatial correlation predictor recudes correlation, teases out the effects of
 
 ```{r}
 #| code-fold: false
-anova(xyPoissonYRWA, PoissonYRWA)
+anova(xyPoissonYRWA, rePoissonYRWA)
 ```
 
-Although the spatial model performs better, there is also evidence against choosing that model. Adding or omitting the spatial term should've have a large impact.
+Although the spatial model performs better, there is also evidence against choosing that model. Adding or omitting the spatial term should've have a large impact. The random effect and spatial correlation are not different from and ANOVA test, but the AIC is better for the spatial model.
 
 ## REVI
 
