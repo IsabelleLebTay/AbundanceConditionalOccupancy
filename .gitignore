@@ -15,7 +15,7 @@ Models/json/
 Models/R/inference.R
 Models/R/poisson.R
 Models/R/poisson.rmd
-
+Models/R/poissonStan.R
 Models/R/poisson_vs_ZI_files/
 Models/R/test_files/
 

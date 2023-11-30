@@ -47,6 +47,8 @@ library(nlme)
 library(ncf)
 library(dplyr)
 library(mgcv)
+library(usdm)
+library(sjPlot)
 
 covariates_path <- "C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/covariates"
 obs_path <- "C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/All Processed Final Location"
@@ -115,7 +117,67 @@ rePoissonTEWA <- glmmTMB(TEWA ~ percent_decid + percent_pine +
 plot(simulateResiduals(PoissonTEWAbase))
 ```
 
-The residuals from the null and random effect models are normally dispersed and distributed.
+What about an interaction?
+
+```{r}
+
+PoissonTEWAbase <- glmmTMB(TEWA ~ percent_decid*RETN_m2 + percent_pine*RETN_m2 + 
+                            percent_spruce*RETN_m2 +
+                         Year_since_logging*RETN_m2,
+                    data = obs_covs_df,
+                    family=poisson)
+
+PoissonTEWAinters <- glmmTMB(TEWA ~ Veg_cat + 
+                         Year_since_logging:RETN_m2,
+                    data = obs_covs_df,
+                    family=poisson)
+summary(PoissonTEWAinters)
+plot_model(PoissonTEWAinters, type = "int")
+
+TEWApgam <- gam(TEWA ~ s(Year_since_logging) + percent_decid + 
+                percent_pine+ percent_spruce + RETN_m2,
+                data = obs_covs_df, family = poisson)
+plot(TEWApgam)
+```
+
+
+```{r}
+plot(simulateResiduals(PoissonTEWAbase))
+vcov(PoissonTEWAbase, full = TRUE)
+
+median_percent_decid <- median(obs_covs_df$percent_decid, na.rm = TRUE)
+median_percent_pine <- median(obs_covs_df$percent_pine, na.rm = TRUE)
+median_percent_spruce <- median(obs_covs_df$percent_spruce, na.rm = TRUE)
+
+specific_RETN_m2_values <- quantile(obs_covs_df$RETN_m2, probs = c(0, 0.25, 0.5, 0.75, 1))
+specific_RETN_m2_values <- c(0, 0.25, 0.5, 0.75, 1)
+# Modify new_data to include these variables
+new_data <- expand.grid(
+  Year_since_logging = seq(min(obs_covs_df$Year_since_logging), max(obs_covs_df$Year_since_logging), length.out = 100),
+  RETN_m2 = specific_RETN_m2_values,
+  percent_decid = median_percent_decid,
+  percent_pine = median_percent_pine,
+  percent_spruce = median_percent_spruce
+)
+
+# Now include the interaction and polynomial terms
+# new_data$I_Year_since_logging_squared <- new_data$Year_since_logging^2
+
+
+head(new_data)
+# Predict TEWA values
+new_data$predicted_TEWA <- predict(PoissonTEWAbase, newdata = new_data, type = "response")
+
+# Plot TEWA vs. Year_since_logging for different RETN_m2 values
+ggplot(new_data, aes(x = Year_since_logging, y = predicted_TEWA, color = factor(RETN_m2))) +
+  geom_line() +
+  labs(x = "Year since logging", y = "Predicted lambda (TEWA)", color = "RETN_m2 Value") +
+  theme_minimal() +
+  facet_wrap(~ factor(RETN_m2), scales = "free_y")
+
+
+
+```
 
 ### Check for spatial correlation
 
@@ -243,6 +305,20 @@ rePoissonOSFL <- glmmTMB(OSFL ~ percent_mixed + percent_pine +
 
 plot(simulateResiduals(PoissonOSFLbase))
 
+```
+
+```{r}
+OSFLinters <- glmmTMB(OSFL ~ Veg_cat*RETN_m2 + 
+                         Year_since_logging*RETN_m2,
+                    data = obs_covs_df,
+                    family=poisson)
+summary(PoissonOSFLbase)
+
+OSFLpgam <- gam(OSFL ~ s(Year_since_logging) + percent_decid + 
+                percent_pine+ percent_spruce + RETN_m2,
+                data = obs_covs_df, family = poisson)
+summary(OSFLpgam)
+plot(OSFLpgam)
 ```
 
 ### Check for spatial correlation
