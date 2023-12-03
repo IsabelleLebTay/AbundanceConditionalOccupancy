@@ -6,7 +6,7 @@ data{
     vector[I] percent_conifer;
     vector[I] percent_pine;
     vector[I] percent_deciduous;
-
+    vector[I] patch;
 }
 
 parameters{
@@ -17,6 +17,7 @@ parameters{
     real beta_pine;
     real beta_deciduous;
     real beta_age_size;
+    real beta_patch;
 }
 
 
@@ -31,7 +32,8 @@ model{
 
  
     M ~ poisson_log(alpha + beta_age*age 
-                      + beta_size*size 
+                      + beta_patch * patch
+                      + beta_size*size  * patch
                       + beta_deciduous * percent_deciduous *size
                       + beta_pine * percent_pine *size
                       + beta_conifer * percent_conifer *size);
@@ -40,7 +42,8 @@ model{
 
 M ~ poisson_log(alpha + beta_age * age 
                       + beta_age_size .* age // .* indicates element-wise multiplication
-                      + beta_size * size 
+                      + beta_patch * patch
+                      + beta_size * size .* patch
                       + beta_deciduous * percent_deciduous 
                       + beta_pine * percent_pine
                       + beta_conifer * percent_conifer);
@@ -53,6 +56,7 @@ M ~ poisson_log(alpha + beta_age * age
     beta_conifer ~ normal(0,1);
     beta_pine ~ normal(0,1);
     beta_deciduous ~ normal(0,1);  
+    beta_patch ~ normal(0,1);
 }
 
 

@@ -49,6 +49,7 @@ library(dplyr)
 library(mgcv)
 library(usdm)
 library(sjPlot)
+library(unmarked)
 
 covariates_path <- "C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/covariates"
 obs_path <- "C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/All Processed Final Location"
@@ -61,7 +62,7 @@ Load data
 #| output: false
 full_covariates <- read.csv(file.path(covariates_path, 'merged_covariates.csv'))
 max_count <- read.csv(file.path(obs_path, 'max_count_all_spp 100m truncation.csv'))
-
+multi_visit <- read.csv(file.path(obs_path, "multi_visit_count_all_spp 100m truncation.csv"))
 ```
 
 Prepare data for modeling
@@ -99,6 +100,68 @@ There is some spatial correlation in the null model. Including a Random effect (
 Let's test it with the xy coefficient.
 
 Conclusion: get rid of RE, add autoXY.
+
+```{r}
+# Format data for pcount()
+
+multi_visit
+
+# List of species
+species <- c("TEWA", "RCKI", "WTSP", "YRWA", "REVI", "OSFL")
+
+# Create a list to hold the species data frames
+species_multiVisit <- list()
+
+# Loop through each species and create a data frame
+for(species_name in species) {
+  species_multiVisit[[species_name]] <- multi_visit %>%
+    select(location, visit_number, Day_of_Year, Time_of_Day, all_of(species_name))
+}
+
+
+# Assuming species_dfs is a list of species data frames
+for(species_name in names(species_multiVisit)) {
+  # Get the data for the species
+  df <- species_multiVisit[[species_name]]
+  
+  # Prepare the count matrix (y)
+  # Assuming 'location' is the site identifier and counts are in the last column
+  y <- with(df, tapply(df[, ncol(df)], list(location, visit_number), sum))
+  
+  # Prepare site covariates (siteCovs), if any
+  # Example: siteCovs <- unique(df[, c('site_covariate1', 'site_covariate2')])
+  siteCovs <- unique(df[, c('site_covariate1', 'site_covariate2')])
+  # Prepare observation covariates (obsCovs), if any
+  # Example: obsCovs <- df[, c('obs_covariate1', 'obs_covariate2')]
+  
+  # Create unmarkedFramePCount object
+  umf <- unmarkedFramePCount(y = y, siteCovs = siteCovs, obsCovs = obsCovs)
+  
+  # Store the unmarkedFramePCount object, e.g., in a list
+  # species_umf[[species_name]] <- umf
+}
+
+View(species_multiVisit)
+# Prepare site covariates (excluding species columns from site_covs)
+site_covs <- obs_covs_df %>% select(-c(TEWA, RCKI, WTSP, YRWA, REVI, OSFL))
+
+# Prepare observation covariates
+obsCovs <- multi_visit %>% select(Day_of_Year, Time_of_Day)
+
+# Create unmarkedFramePCount objects for each species
+species_umf <- list()
+for(species_name in species) {
+  # Prepare the count matrix (y)
+  y <- with(species_multiVisit[[species_name]], tapply(species_multiVisit[[species_name]][[species_name]], list(location, visit_number), sum))
+  
+  # Create unmarkedFramePCount object
+  species_umf[[species_name]] <- unmarkedFramePCount(y = y, siteCovs = site_covs, obsCovs = obsCovs)
+}
+
+unmarkedFramePCount()
+
+pcount(formula = "")
+```
 
 ```{r}
 # #| code-fold: false
