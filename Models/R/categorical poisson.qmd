@@ -73,3 +73,15 @@ GLM4 <- glmmTMB(TEWA ~ RETN_m2:Veg_cat + RETN_m2:patch,
 summary(GLM4)
 
 ```
+
+#3. In Stan---
+
+
+```{r}
+library(rstan)
+library(brms)
+make_stancode(
+  formula = TEWA ~ RETN_m2:Veg_cat + RETN_m2:Year_since_logging + poly(Year_since_logging^2),
+  data = ObsCovsDF, family = "poisson"
+)
+```
