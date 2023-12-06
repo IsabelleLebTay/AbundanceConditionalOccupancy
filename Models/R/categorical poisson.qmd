@@ -1,0 +1,75 @@
+---
+
+---
+
+
+```{r}
+.libPaths()
+library(glmmTMB)
+library(DHARMa)
+library(ggplot2)
+library(bbmle) 
+library(nlme)
+library(ncf)
+library(dplyr)
+library(mgcv)
+library(usdm)
+library(MuMIn)
+# install.packages(c("sjPlots", "usdm", "DHARMa", "bbmle", "ncf"), lib = "C:/Users/ilebe/AppData/Local/R/win-library/4.3")
+install.packages("MuMIn", lib = "C:/Users/ilebe/AppData/Local/R/win-library/4.3")
+library(sjPlot, lib.loc = "C:/Users/ilebe/AppData/Local/R/win-library/4.3")
+library(httpgd)
+```
+
+1. Data---
+
+```{r}
+
+obs_path <- "C:/Users/ilebe/Documents/!Masters!/Analysis/0. Data/Processed/All Processed Final Location"
+ObsCovsDF <- read.csv(file.path(obs_path, "max count with covs 250m.csv"))
+ Define the predictors to scale
+predictors_to_scale <- c('RETN_m2', 'Year_since_logging')
+ObsCovsDF$Veg_cat <- as.factor(ObsCovsDF$Veg_cat)
+ObsCovsDF$patch <- as.numeric(ObsCovsDF$patch)
+# Apply MinMax scaling to each predictor
+ObsCovsDF[, predictors_to_scale] <- lapply(ObsCovsDF[, predictors_to_scale], function(x) {
+  (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+})
+```
+
+2. Models---
+
+```{r}
+bird <- "TEWA"
+formula_string <- paste(bird, "~ RETN_m2:Veg_cat", sep = "")
+formula <- as.formula(formula_string)
+?r2.squared
+GLM1 <- glmmTMB(OSFL ~ RETN_m2:Veg_cat + poly(Year_since_logging^2) + RETN_m2,
+  data = ObsCovsDF, family = "poisson")
+summary(GLM1)
+AIC(GLM1)
+
+plot_model(GLM1, type = "int")
+plot_model(GLM1, type = "est",
+            vline.color = "darkslategrey")
+
+
+formula_string <- paste(bird, "~ RETN_m2:Veg_cat + RETN_m2:Year_since_logging", sep = "")
+formula <- as.formula(formula_string)
+GLM2 <- glmmTMB(OSFL ~ RETN_m2*Veg_cat,
+  data = ObsCovsDF, family = "poisson")
+
+summary(GLM2)
+
+GLM3 <- glmmTMB(TEWA ~ RETN_m2:Veg_cat + RETN_m2:Year_since_logging + poly(Year_since_logging^2),
+  data = ObsCovsDF, family = "poisson")
+
+par(mfrow=c(1,3))
+summary(GLM3)
+plot_model(GLM3, type = "int")
+
+GLM4 <- glmmTMB(TEWA ~ RETN_m2:Veg_cat + RETN_m2:patch,
+  data = ObsCovsDF, family = "poisson")
+summary(GLM4)
+
+```
