@@ -61,7 +61,7 @@ M ~ poisson_log(alpha + beta_age * age
 
 
 generated quantities {
-  array[I] int<lower=0> M_pred;
+  array int<lower=0> M_pred[I];
   real log_lik[I]; // log-likelihood for each predicted count
   for (i in 1:I) {
     // Generate predicted count for each observation
@@ -79,3 +79,4 @@ generated quantities {
                                           + beta_deciduous * percent_deciduous[i]);
   }
 }
+
