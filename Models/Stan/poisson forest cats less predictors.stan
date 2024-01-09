@@ -2,6 +2,7 @@ data{
     int<lower=0> I; // number of sites
     array[I] int<lower=0> M;
     vector[I] size;
+    // array[I] vector size;
     array[I] int tree_groups;
     vector[I] patch;
     vector[I] age;
@@ -26,21 +27,31 @@ model{
     beta_age_patch ~ normal(0,1);
 } 
 
-/*
+
 generated quantities{
     // # how does lambda change in the 4 different habitat types, as the patch size increases?
     // # how does lambda change over age of harvest when patch is either 0 or 1?
     //vector[4] pred_lambda[I];
-    array[I] real<lower=0> pred_lambda;
+    // array[I] real<lower=0> pred_lambda;
     //real<lower=0> pred_lambda;
 
     // Generate lambda for different habitat types and sizes
 
+    // if tree_groups is pine (0, or 1? Because I think Stan indexes starting at 1)
+    array[I] real pred_lambda_pine;
+
+    // how do I make this predict in a new setting? aka, not the number of sites. Let's try first with the sites that I do have
+    for (i in 1:I) {
+        pred_lambda_pine[i] = alpha + beta_size[1] .* size[i]
+                                + beta_age_patch * patch[i] .* age[i];
+                    }
+    
+    /*
     for(i in 1:I){
 
         pred_lambda = exponential_rng(alpha + beta_size[tree_groups] .* size[i]
                             + beta_age_patch * patch[i] .* age[i]);
-    }
+    }*/
 
-}*/
+}
 

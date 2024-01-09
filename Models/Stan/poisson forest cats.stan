@@ -20,7 +20,7 @@ model{
 
     // likelihood
     M ~ poisson_log(alpha + beta_size[tree_groups] .* size
-                          //+ beta_age_size * size .* age // .* means element-wise multiplication
+                          // + beta_age_size * size .* age // .* means element-wise multiplication
                           + beta_age_patch * patch .* age
                           + beta_age[tree_groups] .* age
                           + beta_patch * patch);
