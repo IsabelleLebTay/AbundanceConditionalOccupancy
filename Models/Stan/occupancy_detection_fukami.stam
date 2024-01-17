@@ -1,0 +1,46 @@
+data {
+  int<lower=0> I; //Number of Sites
+    int<lower=6> J; //Number of Replicates at each site
+    int<lower=0, upper=1> y[I, J]; //Detection at each site on each sampling rep
+    int<lower=0, upper=1> x[I]; //Observed occupancy at each site
+    real time_of_day[I, J];
+    real Julian_date[I, J];
+    }
+    
+parameters {
+    real a0; //specifying regression parameters
+    real b0;
+    real b1;
+    real b2;
+    }
+    
+transformed parameters {
+    real<lower=0,upper=1>  psi[N]; 
+    real<lower=0,upper=1>  p[N, J];
+    for(i in 1:N) {
+    psi[i] = inv_logit(a0);  //intercept-only model for occupancy
+    for(j in 1:J) {
+    p[i, j] = inv_logit(b0 + b1*time_of_day[i, j] + b2*time_of_day[i, j]*Julian_date[i, j])
+    }
+    }
+}
+    
+model {
+    // Priors
+    a0 ~ normal(0, 1);
+    b0 ~ normal(0, 1);
+    b1 ~ normal(0, 1);
+    b2 ~ normal(0, 1);
+    
+    // likelihood
+    for(i in 1:N) {
+    if(x[i]==1) {
+    1 ~ bernoulli(psi[i]);
+    y[i] ~ bernoulli(p[i]);
+    }
+    if(x[i]==0) {
+    increment_log_prob(log_sum_exp(log(psi[i]) + log1m(p[i,1]) + log1m(p[i,2]) + 
+    log1m(p[i,3]) + log1m(p[i,4]) + log1m(p[i,5]) + log1m(p[i,6]), log1m(psi[i]))); //?
+    }
+    }
+    }

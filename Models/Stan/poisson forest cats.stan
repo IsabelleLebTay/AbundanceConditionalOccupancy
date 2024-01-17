@@ -26,6 +26,7 @@ model{
                           + beta_age[tree_groups] .* age
                           + beta_patch * patch); */ //this is the original
 
+    // in this one, oatch sie doesn't interact with forest type, because ecologically it doesnt make much sense.
     M ~ poisson_log(alpha + beta_size * size
                         // + beta_age_size * size .* age // .* means element-wise multiplication
                         + beta_age_patch * patch .* age
@@ -40,4 +41,16 @@ model{
     beta_age ~ normal(0,1);
 } 
 
+generated quantities {
+  vector[I] log_lik;  
+  //real log_lik[I]; // log-likelihood for each predicted count
+  for (i in 1:I) {
+    // Generate likelihood for each observation
 
+    log_lik[i] = poisson_log_lpmf(M[i] | alpha 
+                                        + beta_size * size[i]
+                                        + beta_age_patch * patch[i] .* age[i]
+                                        + beta_age[tree_groups[i]] .* age[i]
+                                        + beta_patch * patch[i]);
+  }
+}

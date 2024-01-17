@@ -1,9 +1,9 @@
 
 
 data {
-    int<lower=0> I;  // number of sites (414 total)
-  int<lower=0> J;  // number of visits per site (15)
-  int N[I, J];     // N is the bird count for each site and visit (observed)
+  int<lower=0> I;  // number of sites
+  int<lower=0> J;  // number of visits per site
+  matrix[I, J] N;     // N is the bird count for each site and visit (observed)
   matrix[I, J] time_of_day;  // Time of day for each site and visit
   matrix[I, J] Julian_date;  // Julian date for each site and visit
   
@@ -43,38 +43,42 @@ parameters {
 
 model {
   // Priors for occupancy coefficients
-  beta_0 ~ normal(0, 5);
-  beta_latitude ~ normal(0, 5);
-  beta_longitude ~ normal(0, 5);
-  beta_age ~ normal(0,10);
+  beta_0 ~ normal(0, 1);
+  beta_latitude ~ normal(0, 1);
+  beta_longitude ~ normal(0, 1);
+  beta_age ~ normal(0,1);
 
- /* beta_percent_conifer ~ normal(0, 5);
-  beta_percent_deciduous ~ normal(0, 5);
-  beta_percent_pine ~ normal(0, 5); */
+ /* beta_percent_conifer ~ normal(0, 1);
+  beta_percent_deciduous ~ normal(0, 1);
+  beta_percent_pine ~ normal(0, 1); */
   
 
   // Priors for detection probability coefficients
-  alpha_0 ~ normal(0, 5);
-  alpha_1 ~ normal(0, 5);
-  alpha_2 ~ normal(0, 5);
+  alpha_0 ~ normal(0, 1);
+  alpha_1 ~ normal(0, 1);
+  alpha_2 ~ normal(0, 1);
 
   for (i in 1:I) {
     // Linear predictor for occupancy probability for site i
-    real lin_pred_occupancy = beta_0 + 
-                              beta_latitude * latitude[i] + 
-                              beta_longitude * longitude[i] + beta_age * age[i];
+
+    real lin_pred_occupancy = beta_0; // intercept only occupancy model
+
     
     // Compute the occupancy probability for site i
     real psi_i = inv_logit(lin_pred_occupancy);
     
     for (j in 1:J) {
       // Linear predictor for detection probability at visit j for site i
-      real lin_pred_detection = alpha_0 + alpha_1 * time_of_day[i,j] + alpha_2 * Julian_date[i,j];
+      real lin_pred_detection = alpha_0 
+                                + alpha_1 * time_of_day[i,j] 
+                                + alpha_2 * Julian_date[i,j]
+                                + beta_latitude * latitude[i] 
+                                + beta_longitude * longitude[i];
       
       // Compute the detection probability at visit j for site i
       real p_ij = inv_logit(lin_pred_detection);
       
-      // Log-likelihood when z_i = 0 (species not present at site i)
+      // Log-likelihood when z_i = 0 //(species not present at site i)
       real log_lik_0 = bernoulli_lpmf(y[i,j] | 0);
       
       // Log-likelihood when z_i = 1 (species present at site i)
