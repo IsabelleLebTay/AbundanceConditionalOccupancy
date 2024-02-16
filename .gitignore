@@ -22,3 +22,5 @@ Models/R/1c_samplingeffortrequired.R
 
 test_files/
 N-mixture test.stan
+svg/
+detection probability.xlsx
