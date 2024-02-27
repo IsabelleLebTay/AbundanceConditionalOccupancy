@@ -24,3 +24,4 @@ test_files/
 N-mixture test.stan
 svg/
 detection probability.xlsx
+stable/
