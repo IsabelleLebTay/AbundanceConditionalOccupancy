@@ -26,3 +26,8 @@ N-mixture test.stan
 svg/
 detection probability.xlsx
 stable/
+
+.html
+.qmd
+.nojekyll
+poisson_vs_ZI_files/
