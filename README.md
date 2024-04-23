@@ -4,6 +4,18 @@
 ![Satellite image of harvest](images/harvest_image_satellite.png)
 
 
+*Stay tuned for the paper in Ornithological Applications, 2024!*
+
+**Branch contents**
+Models/Stan:
+- Many versions of applying occupancy, abundance, and mixture models on the same data.
+- Solves the marginalisation of carry-over estimated discrete latent parameters (specific to the HMC log-probvability framework) 
+
+python/:
+- Application of the distance-based perceptibility truncation to abundance data, at any distance
+- Bayesian analysis of the truncated data with increasingly complex and refined stan models
+
+
 This model is for a single species, and will be replicated for 6 different bird species. They are all migratory boreal songbirds and I expect they will react differently to the environmental conditions reflected in the model both due to the species distribution and regional density, their habitat preferences, and their vocal/territorial behaviours.
 
 The data was gathered using ARUs (Autonomous Recording Units) and processed during the first few hours around dawn. All detected individuals of each species of interest is tagged (WTSP, TEWA, REVI, OSFL, YRWA, RCKI).

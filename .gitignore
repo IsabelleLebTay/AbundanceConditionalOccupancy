@@ -12,7 +12,7 @@ Models/Stan/poisson forest cats copy.stan
 Models/Inference Data/
 
 Models/json/
-
+Models/numpy arrays/
 Models/R/inference.R
 Models/R/poisson.R
 Models/R/poisson.rmd
