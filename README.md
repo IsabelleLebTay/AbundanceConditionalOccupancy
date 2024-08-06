@@ -7,6 +7,7 @@
 *Stay tuned for the paper in Ornithological Applications, 2024!*
 
 **Branch contents**
+
 Models/Stan:
 - Many versions of applying occupancy, abundance, and mixture models on the same data.
 - Solves the marginalisation of carry-over estimated discrete latent parameters (specific to the HMC log-probvability framework) 
@@ -15,8 +16,9 @@ python/:
 - Application of the distance-based perceptibility truncation to abundance data, at any distance
 - Bayesian analysis of the truncated data with increasingly complex and refined stan models
 
+## Single species response to small scale tree retention
 
-This model is for a single species, and will be replicated for 6 different bird species. They are all migratory boreal songbirds and I expect they will react differently to the environmental conditions reflected in the model both due to the species distribution and regional density, their habitat preferences, and their vocal/territorial behaviours.
+This model is for a single species, and will be replicated for 6 different bird species. They are all migratory boreal songbirds and will react differently to the environmental conditions reflected in the model both due to the species distribution and regional density, their habitat preferences, and their vocal/territorial behaviours.
 
 The data was gathered using ARUs (Autonomous Recording Units) and processed during the first few hours around dawn. All detected individuals of each species of interest is tagged (WTSP, TEWA, REVI, OSFL, YRWA, RCKI).
 
@@ -28,7 +30,7 @@ The question we are attempting to answer with this model is: *Is the recovery ra
 
 **Study design**
 To assess recovery, we have a gradient of 22 years of harvests (data was gathered in the last ~3 years), and in all major commercial forests (mixedwood, aspen, upland spruce, pine), across all FMA's (related to geographical timber allotments granted by the provincial government to differnet forestry companies).
-- 404+ sites sampled, considered indepent (more than minimum 300m away from each other)
+- />400 sites sampled, considered indepent (more than minimum 300m away from each other)
 - In equal parts no retention and retention of as small as 1 tree, up to 20,000 m^2 (still fairly small). 
 - The visits (1 minute recordings) are transcribed in the online sound processing software Wildtrax and each unique individual per species is identified & tagged.
 
